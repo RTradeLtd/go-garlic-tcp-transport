@@ -20,4 +20,5 @@ func TestGarlicTransport(t *testing.T) {
 		t.Error(err.Error())
 	}
 	log.Println(listener.ID())
+	log.Println(maserver)
 }
