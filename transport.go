@@ -12,9 +12,8 @@ import (
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
 
-	//RELATIVE IMPORTS REMOVE THESE WHEN YOU HAVE THEM DONE.
-	"./common"
-	"./conn"
+	"github.com/rtradeltd/go-garlic-tcp-transport/common"
+	"github.com/rtradeltd/go-garlic-tcp-transport/conn"
 )
 
 // GarlicTCPTransport is a libp2p interface to an i2p TCP-like tunnel created
