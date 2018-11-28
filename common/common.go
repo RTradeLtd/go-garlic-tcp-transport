@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	//manet "github.com/multiformats/go-multiaddr-net"
 	ma "github.com/multiformats/go-multiaddr"
 )
 
@@ -84,4 +83,16 @@ func CreateEepServiceKey() (*sam3.I2PKeys, error) {
 		return nil, err
 	}
 	return &k, err
+}
+
+func EepServiceMultiAddr() (*ma.Multiaddr, error) {
+	k, err := CreateEepServiceKey()
+	if err != nil {
+		return nil, err
+	}
+	m, err := ma.NewMultiaddr("/garlict/" + k.Addr().Base64() + ":80")
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
 }

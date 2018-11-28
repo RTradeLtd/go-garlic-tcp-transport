@@ -27,7 +27,7 @@ func SAMPort(s string) func(*GarlicTCPTransport) error {
 			c.portSAM = s
 			return nil
 		}
-		return fmt.Errorf("port is %s invalid")
+		return fmt.Errorf("port is %s invalid", s)
 	}
 }
 

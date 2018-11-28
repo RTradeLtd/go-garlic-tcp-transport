@@ -12,8 +12,10 @@ import (
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
 
-	"github.com/rtradeltd/go-garlic-tcp-transport/common"
-	"github.com/rtradeltd/go-garlic-tcp-transport/conn"
+	//"github.com/rtradeltd/go-garlic-tcp-transport/common"
+	//"github.com/rtradeltd/go-garlic-tcp-transport/conn"
+	"./common"
+	"./conn"
 )
 
 // GarlicTCPTransport is a libp2p interface to an i2p TCP-like tunnel created
@@ -59,6 +61,10 @@ func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (
 }
 
 func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
+	return t.ListenI2P(addr)
+}
+
+func (t GarlicTCPTransport) ListenI2P(addr ma.Multiaddr) (*i2ptcpconn.GarlicTCPConn, error) {
 	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic)
 	if err != nil {
 		return nil, err
@@ -84,7 +90,7 @@ func NewGarlicTCPTransport(host, port, pass string, keysPath string, onlyGarlic 
 func NewGarlicTCPTransportFromOptions(opts ...func(*GarlicTCPTransport) error) (*GarlicTCPTransport, error) {
 	var g GarlicTCPTransport
 	g.hostSAM = "127.0.0.1"
-	g.portSAM = "7657"
+	g.portSAM = "7656"
 	g.passSAM = ""
 	g.keysPath = ""
 	g.onlyGarlic = false

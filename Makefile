@@ -33,3 +33,9 @@ vet:
 
 test:
 	go test
+
+install:
+	rm -rf $(GOPATH)/src/github.com/rtradeltd/go-garlic-ntcp-transport
+	mkdir -p $(GOPATH)/src/github.com/rtradeltd/go-garlic-ntcp-transport
+	git clone git@github.com:RTradeLtd/go-garlic-tcp-transport.git $(GOPATH)/src/github.com/rtradeltd/go-garlic-ntcp-transport
+	rm -rf $(GOPATH)/src/github.com/rtradeltd/go-garlic-ntcp-transport/.git
