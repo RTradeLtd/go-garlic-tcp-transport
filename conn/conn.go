@@ -8,9 +8,9 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	"net"
 
-	"github.com/rtradeltd/sam3"
 	"github.com/libp2p/go-stream-muxer"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
+	"github.com/rtradeltd/sam3"
 )
 
 // GarlicTCPConn implements a Connection interface
