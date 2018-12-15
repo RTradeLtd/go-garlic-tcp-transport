@@ -4,7 +4,7 @@ import (
 	"github.com/eyedeekay/sam3"
 	"net"
 
-	manet "../go-multiaddr-net"
+	manet "github.com/multiformats/go-multiaddr-net"
 	ma "github.com/rtradeltd/go-multiaddr"
 )
 
@@ -25,7 +25,7 @@ func FromNetAddrToMultiaddr(from net.Addr) (ma.Multiaddr, error) {
 
 // FromI2PNetAddrToMultiaddr converts a sam3.I2PAddr to a ma.Multiaddr
 func FromI2PNetAddrToMultiaddr(from sam3.I2PAddr) (ma.Multiaddr, error) {
-	return ma.NewMultiaddr("/garlict/" + from.Base32())
+	return ma.NewMultiaddr("/garlict/" + from.Base64())
 }
 
 func NewGarlicTCPNetCodec() manet.NetCodec {
