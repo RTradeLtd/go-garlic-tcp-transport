@@ -25,7 +25,7 @@ func IsValidGarlicMultiAddr(a ma.Multiaddr) bool {
 	}
 
 	// split into garlic address
-	addr, err := a.ValueForProtocol(ma.P_GARLICT)
+	addr, err := a.ValueForProtocol(ma.P_GARLIC)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
