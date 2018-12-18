@@ -72,7 +72,7 @@ func (t GarlicTCPTransport) ListenI2P(addr ma.Multiaddr) (*i2ptcpconn.GarlicTCPC
 
 // Protocols need only return this I think
 func (t GarlicTCPTransport) Protocols() []int {
-	return []int{ma.P_GARLIC}
+	return []int{ma.P_GARLIC64}
 }
 
 // Proxy always returns false, we're using the SAM bridge to make our requests
