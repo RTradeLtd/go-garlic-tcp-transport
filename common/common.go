@@ -19,8 +19,8 @@ func IsValidGarlicMultiAddr(a ma.Multiaddr) bool {
 	}
 
 	// check for correct network type
-	if a.Protocols()[0].Name != "garlict" {
-		fmt.Println("Protocol != garlict")
+	if a.Protocols()[0].Name != "garlic" {
+		fmt.Println("Protocol != garlic")
 		return false
 	}
 
@@ -90,7 +90,7 @@ func EepServiceMultiAddr() (*ma.Multiaddr, error) {
 	if err != nil {
 		return nil, err
 	}
-	m, err := ma.NewMultiaddr("/garlict/" + k.Addr().Base64() + ":80")
+	m, err := ma.NewMultiaddr("/garlic/" + k.Addr().Base64() + ":80")
 	if err != nil {
 		return nil, err
 	}

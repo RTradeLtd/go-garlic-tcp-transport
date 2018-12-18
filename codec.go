@@ -25,7 +25,7 @@ func FromNetAddrToMultiaddr(from net.Addr) (ma.Multiaddr, error) {
 
 // FromI2PNetAddrToMultiaddr converts a sam3.I2PAddr to a ma.Multiaddr
 func FromI2PNetAddrToMultiaddr(from sam3.I2PAddr) (ma.Multiaddr, error) {
-	return ma.NewMultiaddr("/garlict/" + from.Base64())
+	return ma.NewMultiaddr("/garlic/" + from.Base64())
 }
 
 func NewGarlicTCPNetCodec() manet.NetCodec {
@@ -38,11 +38,11 @@ func NewGarlicTCPNetCodec() manet.NetCodec {
 
 	return manet.NetCodec{
 		//NetAddrNetworks: ,
-		ProtocolName: "garlict",
+		ProtocolName: "garlic",
 		// ParseNetAddr parses a net.Addr belonging to this type into a multiaddr
 		ParseNetAddr: fromNetAddr,
 		// ConvertMultiaddr converts a multiaddr of this type back into a net.Addr
 		ConvertMultiaddr: toMultiAddr,
-		Protocol:         ma.ProtocolWithName("garlict"),
+		Protocol:         ma.ProtocolWithName("garlic"),
 	}
 }
