@@ -5,7 +5,7 @@ import (
 	crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 	tpt "github.com/libp2p/go-libp2p-transport"
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/rtradeltd/go-multiaddr"
 	"net"
 
 	"github.com/libp2p/go-stream-muxer"

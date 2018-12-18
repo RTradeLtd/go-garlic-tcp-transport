@@ -1,7 +1,7 @@
 package i2ptcp
 
 import (
-	"./common"
+	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"log"
 	"testing"
 )

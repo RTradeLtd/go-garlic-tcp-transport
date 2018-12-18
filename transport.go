@@ -10,7 +10,7 @@ import (
 	//peerstore "github.com/libp2p/go-libp2p-peerstore"
 
 	tpt "github.com/libp2p/go-libp2p-transport"
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/rtradeltd/go-multiaddr"
 
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/go-garlic-tcp-transport/conn"
