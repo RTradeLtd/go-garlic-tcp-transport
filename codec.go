@@ -4,8 +4,8 @@ import (
 	"github.com/eyedeekay/sam3"
 	"net"
 
+	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
-	ma "github.com/rtradeltd/go-multiaddr"
 )
 
 // FromMultiaddrToNetAddr wraps around FromMultiaddrToI2PNetAddr to work with manet.NetCodec

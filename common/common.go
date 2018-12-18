@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	ma "github.com/rtradeltd/go-multiaddr"
+	ma "github.com/multiformats/go-multiaddr"
 )
 
 // IsValidGarlicMultiAddr is used to validate that a multiaddr
