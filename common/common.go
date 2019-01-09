@@ -2,7 +2,7 @@ package i2phelpers
 
 import (
 	"fmt"
-	"github.com/eyedeekay/sam3"
+	"github.com/rtradeltd/sam3"
 	"math/rand"
 	"os"
 	"path/filepath"
