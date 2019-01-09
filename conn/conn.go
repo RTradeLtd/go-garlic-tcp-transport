@@ -13,7 +13,7 @@ import (
 	"github.com/rtradeltd/sam3"
 )
 
-// GarlicTCPConn implements a Connection interface
+// GarlicTCPConn implements a Conn interface
 type GarlicTCPConn struct {
 	*sam3.SAMConn
 	*sam3.SAM
@@ -132,12 +132,12 @@ func (g GarlicTCPConn) GetI2PKeys() (*sam3.I2PKeys, error) {
 	return i2phelpers.LoadKeys(g.keysPath)
 }
 
-// Accept implements
+// Accept implements a listener
 func (g GarlicTCPConn) Accept() (tpt.Conn, error) {
 	return g.AcceptI2P()
 }
 
-// Accept implements
+// AcceptI2P helps with Accept
 func (g GarlicTCPConn) AcceptI2P() (*GarlicTCPConn, error) {
 	var err error
 	g.SAMConn, err = g.StreamListener.AcceptI2P()
@@ -147,10 +147,12 @@ func (g GarlicTCPConn) AcceptI2P() (*GarlicTCPConn, error) {
 	return &g, nil
 }
 
+// Listen implements a listener
 func (g GarlicTCPConn) Listen() (tpt.Conn, error) {
 	return g.ListenI2P()
 }
 
+// ListenI2P helps with Listen
 func (g GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 	var err error
 	g.StreamListener, err = g.StreamSession.Listen()
@@ -160,10 +162,12 @@ func (g GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 	return &g, nil
 }
 
+// Return the net.Addr version of the local Multiaddr
 func (g GarlicTCPConn) Addr() net.Addr {
 	return g.StreamListener.Addr()
 }
 
+// return the local Multiaddr
 func (g GarlicTCPConn) Multiaddr() ma.Multiaddr {
 	return g.laddr
 }
