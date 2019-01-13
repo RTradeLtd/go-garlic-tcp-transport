@@ -29,7 +29,7 @@ type GarlicTCPTransport struct {
 	garlicOptions []string
 }
 
-func (t GarlicTCPTransport) Print() []string {
+func (t GarlicTCPTransport) PrintOptions() []string {
     return t.garlicOptions
 }
 
