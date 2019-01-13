@@ -25,7 +25,12 @@ type GarlicTCPTransport struct {
 
 	keysPath string
 
-	onlyGarlic bool
+	onlyGarlic    bool
+	garlicOptions []string
+}
+
+func (t GarlicTCPTransport) Print() []string {
+    return t.garlicOptions
 }
 
 // CanDial implements transport.CanDial
@@ -81,8 +86,15 @@ func (t GarlicTCPTransport) Proxy() bool {
 }
 
 // NewGarlicTransport initializes a GarlicTransport for libp2p
-func NewGarlicTCPTransport(host, port, pass string, keysPath string, onlyGarlic bool) (tpt.Transport, error) {
-	return NewGarlicTCPTransportFromOptions(SAMHost(host), SAMPort(port), SAMPass(pass), KeysPath(keysPath), OnlyGarlic(onlyGarlic))
+func NewGarlicTCPTransport(host, port, pass string, keysPath string, onlyGarlic bool, options []string) (tpt.Transport, error) {
+	return NewGarlicTCPTransportFromOptions(
+		SAMHost(host),
+		SAMPort(port),
+		SAMPass(pass),
+		KeysPath(keysPath),
+		OnlyGarlic(onlyGarlic),
+		GarlicOptions(options),
+	)
 }
 
 func NewGarlicTCPTransportFromOptions(opts ...func(*GarlicTCPTransport) error) (*GarlicTCPTransport, error) {
@@ -92,6 +104,7 @@ func NewGarlicTCPTransportFromOptions(opts ...func(*GarlicTCPTransport) error) (
 	g.passSAM = ""
 	g.keysPath = ""
 	g.onlyGarlic = false
+	g.garlicOptions = []string{}
 	for _, o := range opts {
 		if err := o(&g); err != nil {
 			return nil, err

@@ -56,3 +56,12 @@ func OnlyGarlic(b bool) func(*GarlicTCPTransport) error {
 		return nil
 	}
 }
+
+func GarlicOptions(s []string) func(*GarlicTCPTransport) error {
+	return func(c *GarlicTCPTransport) error {
+		for _, v := range s {
+			c.garlicOptions = append(c.garlicOptions, v)
+		}
+		return nil
+	}
+}
