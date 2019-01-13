@@ -56,7 +56,7 @@ func (t *GarlicTCPTransport) MatchesI2P(a ma.Multiaddr) bool {
 
 // Dial returns a new GarlicConn
 func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic)
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 }
 
 func (t GarlicTCPTransport) ListenI2P(addr ma.Multiaddr) (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic)
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
