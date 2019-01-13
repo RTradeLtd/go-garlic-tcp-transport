@@ -9,7 +9,6 @@ import (
 	"net"
 
 	"github.com/libp2p/go-stream-muxer"
-	//"github.com/rtradeltd/go-garlic-tcp-transport"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/sam3"
 )
@@ -178,7 +177,7 @@ func (g GarlicTCPConn) Multiaddr() ma.Multiaddr {
 	return g.laddr
 }
 
-func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath string, onlyGarlic bool) (*GarlicTCPConn, error) {
+func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
 		SAMHost(host),
