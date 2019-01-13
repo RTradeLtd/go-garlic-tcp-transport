@@ -9,7 +9,7 @@ import (
 	"net"
 
 	"github.com/libp2p/go-stream-muxer"
-    "github.com/rtradeltd/go-garlic-tcp-transport"
+	//"github.com/rtradeltd/go-garlic-tcp-transport"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/sam3"
 )
@@ -35,7 +35,12 @@ type GarlicTCPConn struct {
 
 	keysPath string
 
-	onlyGarlic bool
+	onlyGarlic    bool
+	garlicOptions []string
+}
+
+func (t GarlicTCPConn) PrintOptions() []string {
+	return t.garlicOptions
 }
 
 // Tranpsort returns the GarlicTCPTransport to which the GarlicTCPConn belongs
@@ -181,6 +186,7 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 		SAMPass(pass),
 		KeysPath(keysPath),
 		OnlyGarlic(onlyGarlic),
+		GarlicOptions(options),
 	)
 }
 
@@ -201,7 +207,7 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.parentTransport.(*i2ptcp.GarlicTCPTransport).PrintOptions())
+	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.PrintOptions())
 	if err != nil {
 		return nil, err
 	}

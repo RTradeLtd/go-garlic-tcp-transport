@@ -30,7 +30,7 @@ type GarlicTCPTransport struct {
 }
 
 func (t GarlicTCPTransport) PrintOptions() []string {
-    return t.garlicOptions
+	return t.garlicOptions
 }
 
 // CanDial implements transport.CanDial

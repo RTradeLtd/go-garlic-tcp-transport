@@ -64,3 +64,12 @@ func OnlyGarlic(b bool) func(*GarlicTCPConn) error {
 		return nil
 	}
 }
+
+func GarlicOptions(s []string) func(*GarlicTCPConn) error {
+	return func(c *GarlicTCPConn) error {
+		for _, v := range s {
+			c.garlicOptions = append(c.garlicOptions, v)
+		}
+		return nil
+	}
+}
