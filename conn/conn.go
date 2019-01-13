@@ -200,7 +200,7 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.parentTransport.Print())
+	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.parentTransport.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
