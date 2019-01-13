@@ -9,6 +9,7 @@ import (
 	"net"
 
 	"github.com/libp2p/go-stream-muxer"
+    "github.com/rtradeltd/go-garlic-tcp-transport"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/sam3"
 )
@@ -200,7 +201,7 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.parentTransport.PrintOptions())
+	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.parentTransport.(*i2ptcp.GarlicTCPTransport).PrintOptions())
 	if err != nil {
 		return nil, err
 	}
