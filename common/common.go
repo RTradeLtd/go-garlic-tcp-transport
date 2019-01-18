@@ -8,8 +8,36 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	ma "github.com/multiformats/go-multiaddr"
 )
+
+const (
+	// DefaultPathName is the default config dir name
+	KeysPathName = ".ipfs"
+	// DefaultPathRoot is the path to the default config dir location.
+	KeysPathRoot = "~/" + KeysPathName
+	// EnvDir is the environment variable used to change the path root.
+	EnvDir = "KEYS_PATH"
+)
+
+func Path(filename, extension string) (string, error) {
+	dir, err := PathRoot()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, filename, extension), nil
+}
+
+// PathRoot returns the default configuration root directory
+func PathRoot() (string, error) {
+	dir := os.Getenv(EnvDir)
+	var err error
+	if len(dir) == 0 {
+		dir, err = homedir.Expand(KeysPathRoot)
+	}
+	return dir, err
+}
 
 // IsValidGarlicMultiAddr is used to validate that a multiaddr
 // is representing a I2P garlic service
@@ -50,14 +78,29 @@ func RandTunName() string {
 	return string(b)
 }
 
+func isValidExtension(ext string) bool {
+	switch ext {
+	case
+		".i2pkeys",
+		".dat":
+		return true
+	}
+	return false
+}
+
 // LoadKeys loads keys into our keys from files in the keys directory
 func LoadKeys(keysPath string) (*sam3.I2PKeys, error) {
-	absPath, err := filepath.EvalSymlinks(keysPath)
+	title := filepath.Base(keysPath)
+	extension := strings.ToLower(filepath.Ext(title))
+	realPath, err := Path(title, extension)
 	if err != nil {
 		return nil, err
 	}
-	if strings.HasSuffix(absPath, ".i2pkeys") {
-		file, err := os.Open(absPath)
+	if _, err := os.Stat(realPath); os.IsNotExist(err) {
+		return CreateEepServiceKey()
+	}
+	if isValidExtension(extension) {
+		file, err := os.Open(realPath)
 		defer file.Close()
 		if err != nil {
 			return nil, err
@@ -68,8 +111,7 @@ func LoadKeys(keysPath string) (*sam3.I2PKeys, error) {
 		}
 		return &keys, nil
 	}
-
-	return CreateEepServiceKey()
+	return nil, fmt.Errorf("Not permitted file extension was encountered.")
 }
 
 func CreateEepServiceKey() (*sam3.I2PKeys, error) {
