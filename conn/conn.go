@@ -1,7 +1,6 @@
 package i2ptcpconn
 
 import (
-	"../codec"
 	"context"
 	crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
@@ -10,6 +9,7 @@ import (
 	"net"
 
 	"github.com/libp2p/go-stream-muxer"
+	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/sam3"
 )
