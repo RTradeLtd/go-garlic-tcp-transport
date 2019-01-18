@@ -1,4 +1,4 @@
-package i2ptcp
+package i2ptcpcodec
 
 import (
 	"github.com/rtradeltd/sam3"

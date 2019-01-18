@@ -1,6 +1,7 @@
 package i2ptcpconn
 
 import (
+	"../codec"
 	"context"
 	crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
@@ -22,6 +23,7 @@ type GarlicTCPConn struct {
 	parentTransport tpt.Transport
 	laddr           ma.Multiaddr
 	raddr           ma.Multiaddr
+	i2pkeys         *sam3.I2PKeys
 
 	lPrivKey crypto.PrivKey
 	lPubKey  crypto.PubKey
@@ -40,6 +42,22 @@ type GarlicTCPConn struct {
 
 func (t GarlicTCPConn) PrintOptions() []string {
 	return t.garlicOptions
+}
+
+func (g GarlicTCPConn) MaBase64() ma.Multiaddr {
+	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(g.i2pkeys.Addr())
+	if err != nil {
+		panic("Critical address error! There is no way this should have occurred")
+	}
+	return r
+}
+
+func (g GarlicTCPConn) Base32() string {
+	return g.i2pkeys.Addr().Base32()
+}
+
+func (g GarlicTCPConn) Base64() string {
+	return g.i2pkeys.Addr().Base64()
 }
 
 // Tranpsort returns the GarlicTCPTransport to which the GarlicTCPConn belongs
@@ -202,11 +220,11 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	i2pkeys, err := g.GetI2PKeys()
+	g.i2pkeys, err = g.GetI2PKeys()
 	if err != nil {
 		return nil, err
 	}
-	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *i2pkeys, g.PrintOptions())
+	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *g.i2pkeys, g.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
