@@ -63,11 +63,15 @@ func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (
 	return conn.DialI2P(c, m, p)
 }
 
+// Listen implements a connection, but addr is IGNORED here, it's drawn from the
+//transport keys
 func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
-	return t.ListenI2P(addr)
+	return t.ListenI2P()
 }
 
-func (t GarlicTCPTransport) ListenI2P(addr ma.Multiaddr) (*i2ptcpconn.GarlicTCPConn, error) {
+// ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
+//require a multiaddr
+func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
 	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
