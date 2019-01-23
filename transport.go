@@ -32,7 +32,8 @@ type GarlicTCPTransport struct {
 
 func (t GarlicTCPTransport) SAMHost() string {
 	st := strings.TrimLeft("/ip4/", t.hostSAM)
-	rt := strings.TrimRight("/", st)
+	stt := strings.TrimLeft("/ip6/", st)
+	rt := strings.TrimRight("/", stt)
 	return rt
 }
 

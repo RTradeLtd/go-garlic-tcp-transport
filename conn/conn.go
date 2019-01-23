@@ -44,7 +44,8 @@ type GarlicTCPConn struct {
 
 func (t GarlicTCPConn) SAMHost() string {
 	st := strings.TrimLeft("/ip4/", t.hostSAM)
-	rt := strings.TrimRight("/", st)
+	stt := strings.TrimLeft("/ip6/", st)
+	rt := strings.TrimRight("/", stt)
 	return rt
 }
 
@@ -228,6 +229,12 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 // NewGarlicTCPConnFromOptions creates a GarlicTCPConn using function arguments
 func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCPConn, error) {
 	var g GarlicTCPConn
+	g.hostSAM = "127.0.0.1"
+	g.portSAM = "7656"
+	//g.passSAM = ""
+	g.keysPath = ""
+	g.onlyGarlic = false
+	g.garlicOptions = []string{}
 	for _, o := range opts {
 		if err := o(&g); err != nil {
 			return nil, err

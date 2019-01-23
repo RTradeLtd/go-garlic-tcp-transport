@@ -43,7 +43,7 @@ func SAMPort(s string) func(*GarlicTCPConn) error {
 		st = strings.TrimRight("/", st)
 		val, err := strconv.Atoi(st)
 		if err != nil {
-			return err
+			return fmt.Errorf("Construction error: %s", err)
 		}
 		if val > 0 && val < 65536 {
 			c.portSAM = "/tcp/" + st + "/"
