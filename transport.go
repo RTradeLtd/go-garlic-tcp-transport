@@ -30,16 +30,16 @@ type GarlicTCPTransport struct {
 	garlicOptions []string
 }
 
-func (t GarlicTCPTransport) SAMHost() string {
-	st := strings.TrimLeft("/ip4/", t.hostSAM)
-	stt := strings.TrimLeft("/ip6/", st)
-	rt := strings.TrimRight("/", stt)
+func (t *GarlicTCPTransport) SAMHost() string {
+	st := strings.TrimPrefix(t.hostSAM, "/ip4/")
+	stt := strings.TrimPrefix(st, "/ip6/")
+	rt := strings.TrimSuffix(stt, "/")
 	return rt
 }
 
-func (t GarlicTCPTransport) SAMPort() string {
-	st := strings.TrimLeft("/tcp/", t.portSAM)
-	rt := strings.TrimRight("/", st)
+func (t *GarlicTCPTransport) SAMPort() string {
+	st := strings.TrimPrefix(t.portSAM, "/tcp/")
+	rt := strings.TrimSuffix(st, "/")
 	return rt
 }
 

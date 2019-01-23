@@ -42,16 +42,16 @@ type GarlicTCPConn struct {
 	garlicOptions []string
 }
 
-func (t GarlicTCPConn) SAMHost() string {
+func (t *GarlicTCPConn) SAMHost() string {
 	st := strings.TrimLeft("/ip4/", t.hostSAM)
 	stt := strings.TrimLeft("/ip6/", st)
 	rt := strings.TrimRight("/", stt)
 	return rt
 }
 
-func (t GarlicTCPConn) SAMPort() string {
-	st := strings.TrimLeft("/tcp/", t.portSAM)
-	rt := strings.TrimRight("/", st)
+func (t *GarlicTCPConn) SAMPort() string {
+	st := strings.TrimPrefix(s, "/tcp/")
+	rt := strings.TrimSuffix(st, "/")
 	return rt
 }
 

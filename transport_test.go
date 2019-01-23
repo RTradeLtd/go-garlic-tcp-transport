@@ -6,7 +6,13 @@ import (
 )
 
 func TestGarlicTransport(t *testing.T) {
-	transport, err := NewGarlicTCPTransportFromOptions()
+	transport, err := NewGarlicTCPTransportFromOptions(
+		SAMHost("127.0.0.1"),
+		SAMPort("7656"),
+		SAMPass(""),
+		KeysPath(""),
+		OnlyGarlic(false),
+	)
 	if err != nil {
 		t.Error(err.Error())
 	}

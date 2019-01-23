@@ -2,7 +2,6 @@ package i2ptcp
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strconv"
 	"strings"
@@ -32,12 +31,11 @@ func SAMHost(s string) func(*GarlicTCPTransport) error {
 //SAMPort sets the port of the SAM bridge to use
 func SAMPort(s string) func(*GarlicTCPTransport) error {
 	return func(c *GarlicTCPTransport) error {
-		st := strings.TrimLeft("/tcp/", s)
-		rt := strings.TrimRight("/", st)
-		log.Println(rt)
+		st := strings.TrimPrefix(s, "/tcp/")
+		rt := strings.TrimSuffix(st, "/")
 		val, err := strconv.Atoi(rt)
 		if err != nil {
-			return fmt.Errorf("Construction error: %s", err)
+			return fmt.Errorf("Transport Construction error: %s", err)
 		}
 		if val > 0 && val < 65536 {
 			c.portSAM = "/tcp/" + rt + "/"

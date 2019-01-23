@@ -39,11 +39,11 @@ func SAMHost(s string) func(*GarlicTCPConn) error {
 //SAMPort sets the port of the SAM bridge to use
 func SAMPort(s string) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
-		st := strings.TrimLeft("/tcp/", s)
-		st = strings.TrimRight("/", st)
-		val, err := strconv.Atoi(st)
+		st := strings.TrimPrefix(s, "/tcp/")
+		rt = strings.TrimSuffix(st, "/")
+		val, err := strconv.Atoi(rt)
 		if err != nil {
-			return fmt.Errorf("Construction error: %s", err)
+			return fmt.Errorf("Connection Construction error: %s", err)
 		}
 		if val > 0 && val < 65536 {
 			c.portSAM = "/tcp/" + st + "/"
