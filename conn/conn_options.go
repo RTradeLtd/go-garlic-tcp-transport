@@ -40,7 +40,7 @@ func SAMHost(s string) func(*GarlicTCPConn) error {
 func SAMPort(s string) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		st := strings.TrimPrefix(s, "/tcp/")
-		rt = strings.TrimSuffix(st, "/")
+		rt := strings.TrimSuffix(st, "/")
 		val, err := strconv.Atoi(rt)
 		if err != nil {
 			return fmt.Errorf("Connection Construction error: %s", err)

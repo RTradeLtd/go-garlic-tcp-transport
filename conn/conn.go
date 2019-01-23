@@ -50,7 +50,7 @@ func (t *GarlicTCPConn) SAMHost() string {
 }
 
 func (t *GarlicTCPConn) SAMPort() string {
-	st := strings.TrimPrefix(s, "/tcp/")
+	st := strings.TrimPrefix(t.portSAM, "/tcp/")
 	rt := strings.TrimSuffix(st, "/")
 	return rt
 }
