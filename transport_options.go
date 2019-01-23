@@ -31,7 +31,9 @@ func SAMHost(s string) func(*GarlicTCPTransport) error {
 //SAMPort sets the port of the SAM bridge to use
 func SAMPort(s string) func(*GarlicTCPTransport) error {
 	return func(c *GarlicTCPTransport) error {
-		st := strings.Replace("/", "", strings.Replace("/tcp/", "", s, -1), -1)
+		st := strings.TrimLeft("/tcp/", s)
+		st = strings.TrimRight("/", st)
+		fmt.Println(st)
 		val, err := strconv.Atoi(st)
 		if err != nil {
 			return err

@@ -2,11 +2,13 @@ package i2ptcpconn
 
 import (
 	"context"
+	"net"
+	"strings"
+
 	crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
-	"net"
 
 	"github.com/libp2p/go-stream-muxer"
 	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
@@ -38,6 +40,22 @@ type GarlicTCPConn struct {
 
 	onlyGarlic    bool
 	garlicOptions []string
+}
+
+func (t GarlicTCPConn) SAMHost() string {
+	st := strings.TrimLeft("/ip4/", t.hostSAM)
+	st = strings.TrimRight("/", st)
+	return st
+}
+
+func (t GarlicTCPConn) SAMPort() string {
+	st := strings.TrimLeft("/tcp/", t.portSAM)
+	st = strings.TrimRight("/", st)
+	return st
+}
+
+func (t GarlicTCPConn) SAMAddress() string {
+	return t.SAMHost() + "" + t.SAMPort()
 }
 
 func (t GarlicTCPConn) PrintOptions() []string {
@@ -216,7 +234,7 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 		}
 	}
 	var err error
-	g.SAM, err = sam3.NewSAM(g.hostSAM + ":" + g.portSAM)
+	g.SAM, err = sam3.NewSAM(g.SAMAddress())
 	if err != nil {
 		return nil, err
 	}
