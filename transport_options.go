@@ -2,8 +2,9 @@ package i2ptcp
 
 import (
 	"fmt"
+	"net"
 	"strconv"
-    "strings"
+	"strings"
 )
 
 // Option is a functional argument
@@ -12,7 +13,17 @@ type Option func(*GarlicTCPTransport) error
 //SAMHost sets the host of the SAM Bridge to use
 func SAMHost(s string) func(*GarlicTCPTransport) error {
 	return func(c *GarlicTCPTransport) error {
-		c.hostSAM = s
+		st := ""
+		if !strings.Contains("/ip4/", s) || !strings.Contains("/ip6/", s) {
+			ip := net.ParseIP(s)
+			if ip.To4() != nil {
+				st = "/ip4/" + s + "/"
+			}
+			if ip.To16() != nil {
+				st = "/ip6/" + s + "/"
+			}
+		}
+		c.hostSAM = st
 		return nil
 	}
 }
@@ -20,7 +31,7 @@ func SAMHost(s string) func(*GarlicTCPTransport) error {
 //SAMPort sets the port of the SAM bridge to use
 func SAMPort(s string) func(*GarlicTCPTransport) error {
 	return func(c *GarlicTCPTransport) error {
-        st := strings.Replace("/", "", strings.Replace("/tcp/", "", s, -1), -1)
+		st := strings.Replace("/", "", strings.Replace("/tcp/", "", s, -1), -1)
 		val, err := strconv.Atoi(st)
 		if err != nil {
 			return err
