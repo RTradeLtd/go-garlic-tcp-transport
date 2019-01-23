@@ -12,7 +12,7 @@ func TestGarlicTransport(t *testing.T) {
 	}
 	listener, err := transport.ListenI2P()
 	if err != nil {
-		t.Error(err.Error())
+		t.Error(err)
 	}
 	log.Println(listener.ID())
 	log.Println(listener.Base64())

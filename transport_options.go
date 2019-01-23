@@ -2,6 +2,7 @@ package i2ptcp
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"strconv"
 	"strings"
@@ -32,14 +33,14 @@ func SAMHost(s string) func(*GarlicTCPTransport) error {
 func SAMPort(s string) func(*GarlicTCPTransport) error {
 	return func(c *GarlicTCPTransport) error {
 		st := strings.TrimLeft("/tcp/", s)
-		st = strings.TrimRight("/", st)
-		fmt.Println(st)
-		val, err := strconv.Atoi(st)
+		rt := strings.TrimRight("/", st)
+		log.Println(rt)
+		val, err := strconv.Atoi(rt)
 		if err != nil {
 			return err
 		}
 		if val > 0 && val < 65536 {
-			c.portSAM = "/tcp/" + st + "/"
+			c.portSAM = "/tcp/" + rt + "/"
 			return nil
 		}
 		return fmt.Errorf("port is %s invalid", s)
