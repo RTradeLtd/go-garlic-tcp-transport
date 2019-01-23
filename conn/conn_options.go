@@ -3,7 +3,9 @@ package i2ptcpconn
 import (
 	"fmt"
 	tpt "github.com/libp2p/go-libp2p-transport"
+	"net"
 	"strconv"
+	"strings"
 )
 
 type Option func(*GarlicTCPConn) error
