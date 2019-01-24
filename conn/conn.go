@@ -2,6 +2,7 @@ package i2ptcpconn
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strings"
 
@@ -43,9 +44,9 @@ type GarlicTCPConn struct {
 }
 
 func (t *GarlicTCPConn) SAMHost() string {
-	st := strings.TrimLeft("/ip4/", t.hostSAM)
-	stt := strings.TrimLeft("/ip6/", st)
-	rt := strings.TrimRight("/", stt)
+	st := strings.TrimPrefix(t.hostSAM, "/ip4/")
+	stt := strings.TrimPrefix(st, "/ip6/")
+	rt := strings.TrimSuffix(stt, "/")
 	return rt
 }
 
@@ -56,7 +57,9 @@ func (t *GarlicTCPConn) SAMPort() string {
 }
 
 func (t GarlicTCPConn) SAMAddress() string {
-	return t.SAMHost() + ":" + t.SAMPort()
+	rt := t.SAMHost() + ":" + t.SAMPort()
+	fmt.Println(rt)
+	return rt
 }
 
 func (t GarlicTCPConn) PrintOptions() []string {

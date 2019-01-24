@@ -46,10 +46,10 @@ func SAMPort(s string) func(*GarlicTCPConn) error {
 			return fmt.Errorf("Connection Construction error: %s", err)
 		}
 		if val > 0 && val < 65536 {
-			c.portSAM = "/tcp/" + st + "/"
+			c.portSAM = "/tcp/" + rt + "/"
 			return nil
 		}
-		return fmt.Errorf("port is %s invalid", st)
+		return fmt.Errorf("port is %s invalid", s)
 	}
 }
 

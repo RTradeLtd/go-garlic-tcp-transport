@@ -1,4 +1,4 @@
-package i2ptcp
+package i2ptcpconn
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 )
 
 func TestGarlicTransport(t *testing.T) {
-	transport, err := NewGarlicTCPTransportFromOptions(
+	conn, err := NewGarlicTCPConnFromOptions(
 		SAMHost("127.0.0.1"),
 		SAMPort("7656"),
 		SAMPass(""),
@@ -16,7 +16,7 @@ func TestGarlicTransport(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	listener, err := transport.ListenI2P()
+	listener, err := conn.ListenI2P()
 	if err != nil {
 		t.Error(err)
 	}
@@ -25,7 +25,7 @@ func TestGarlicTransport(t *testing.T) {
 }
 
 func TestGarlicTransportMaStrings(t *testing.T) {
-	transport, err := NewGarlicTCPTransportFromOptions(
+	conn, err := NewGarlicTCPConnFromOptions(
 		SAMHost("/ip4/127.0.0.1/"),
 		SAMPort("/tcp/7656/"),
 		SAMPass(""),
@@ -35,7 +35,7 @@ func TestGarlicTransportMaStrings(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	listener, err := transport.ListenI2P()
+	listener, err := conn.ListenI2P()
 	if err != nil {
 		t.Error(err)
 	}
