@@ -2,7 +2,6 @@ package i2ptcp
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	//"crypto/rand"
 
