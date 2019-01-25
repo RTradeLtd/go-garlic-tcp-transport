@@ -2,10 +2,12 @@ package i2ptcpconn
 
 import (
 	"fmt"
-	tpt "github.com/libp2p/go-libp2p-transport"
 	"net"
 	"strconv"
 	"strings"
+
+	peer "github.com/libp2p/go-libp2p-peer"
+	tpt "github.com/libp2p/go-libp2p-transport"
 )
 
 // Option is a functional argument to the connection constructor
@@ -88,6 +90,13 @@ func GarlicOptions(s []string) func(*GarlicTCPConn) error {
 		for _, v := range s {
 			c.garlicOptions = append(c.garlicOptions, v)
 		}
+		return nil
+	}
+}
+
+func LocalPeerID(p peer.ID) func(*GarlicTCPConn) error {
+	return func(c *GarlicTCPConn) error {
+		c.id = p
 		return nil
 	}
 }

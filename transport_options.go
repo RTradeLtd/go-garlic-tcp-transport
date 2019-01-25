@@ -2,6 +2,7 @@ package i2ptcp
 
 import (
 	"fmt"
+	peer "github.com/libp2p/go-libp2p-peer"
 	"net"
 	"strconv"
 	"strings"
@@ -76,6 +77,13 @@ func GarlicOptions(s []string) func(*GarlicTCPTransport) error {
 		for _, v := range s {
 			c.garlicOptions = append(c.garlicOptions, v)
 		}
+		return nil
+	}
+}
+
+func LocalPeerID(p peer.ID) func(*GarlicTCPTransport) error {
+	return func(c *GarlicTCPTransport) error {
+		c.id = p
 		return nil
 	}
 }

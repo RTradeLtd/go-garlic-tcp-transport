@@ -28,11 +28,8 @@ type GarlicTCPConn struct {
 	parentTransport tpt.Transport
 	laddr           ma.Multiaddr
 	i2pkeys         *sam3.I2PKeys
-
-	lPrivKey crypto.PrivKey
-	lPubKey  crypto.PubKey
-
-	rPubKey crypto.PubKey
+	id              peer.ID
+	rid             peer.ID
 
 	hostSAM string
 	portSAM string
@@ -144,30 +141,23 @@ func (t GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
 
 // LocalPrivateKey returns the local private key used for the peer.ID
 func (t GarlicTCPConn) LocalPrivateKey() crypto.PrivKey {
-	return t.lPrivKey
+	return nil
 }
 
 // RemotePeer returns the remote peer.ID used for IPFS
 func (t GarlicTCPConn) RemotePeer() peer.ID {
-	rpeer, err := peer.IDFromPublicKey(t.RemotePublicKey())
-	if err != nil {
-		panic(err)
-	}
-	return rpeer
+	return t.rid
 }
 
-//RemotePublicKey returns the remote public key used for the peer.ID
+// RemotePublicKey returns the remote public key used for communicating with the
+// peer. It returns nil for now, security is provided solely by i2p for now.
 func (t GarlicTCPConn) RemotePublicKey() crypto.PubKey {
-	return t.rPubKey
+	return nil
 }
 
 // LocalPeer returns the local peer.ID used for IPFS
 func (t GarlicTCPConn) LocalPeer() peer.ID {
-	lpeer, err := peer.IDFromPrivateKey(t.LocalPrivateKey())
-	if err != nil {
-		panic(err)
-	}
-	return lpeer
+	return t.id
 }
 
 // Close ends a SAM session associated with a transport
@@ -278,6 +268,21 @@ func (t GarlicTCPConn) Multiaddr() ma.Multiaddr {
 func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
+		SAMHost(host),
+		SAMPort(port),
+		SAMPass(pass),
+		KeysPath(keysPath),
+		OnlyGarlic(onlyGarlic),
+		GarlicOptions(options),
+	)
+}
+
+// NewGarlicTCPConnPeer creates an I2P Connection struct from a fixed list of
+// arguments with a local peer.ID
+func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
+	return NewGarlicTCPConnFromOptions(
+		Transport(transport),
+        LocalPeerID(id),
 		SAMHost(host),
 		SAMPort(port),
 		SAMPass(pass),

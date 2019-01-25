@@ -3,12 +3,8 @@ package i2ptcp
 import (
 	"context"
 	"strings"
-	//"crypto/rand"
 
-	//crypto "github.com/libp2p/go-libp2p-crypto"
-	//net "github.com/libp2p/go-libp2p-net"
 	peer "github.com/libp2p/go-libp2p-peer"
-	//peerstore "github.com/libp2p/go-libp2p-peerstore"
 
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
@@ -23,6 +19,7 @@ type GarlicTCPTransport struct {
 	hostSAM string
 	portSAM string
 	passSAM string
+	id      peer.ID
 
 	keysPath string
 
@@ -90,7 +87,7 @@ func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
 func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.SAMHost(), t.SAMPort(), t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.SAMHost(), t.SAMPort(), t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +107,19 @@ func (t GarlicTCPTransport) Proxy() bool {
 // NewGarlicTransport initializes a GarlicTransport for libp2p
 func NewGarlicTCPTransport(host, port, pass string, keysPath string, onlyGarlic bool, options []string) (tpt.Transport, error) {
 	return NewGarlicTCPTransportFromOptions(
+		SAMHost(host),
+		SAMPort(port),
+		SAMPass(pass),
+		KeysPath(keysPath),
+		OnlyGarlic(onlyGarlic),
+		GarlicOptions(options),
+	)
+}
+
+// NewGarlicTransportPeer initializes a GarlicTransport for libp2p with a local peer.ID
+func NewGarlicTCPTransportPeer(id peer.ID, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (tpt.Transport, error) {
+	return NewGarlicTCPTransportFromOptions(
+		LocalPeerID(id),
 		SAMHost(host),
 		SAMPort(port),
 		SAMPass(pass),
