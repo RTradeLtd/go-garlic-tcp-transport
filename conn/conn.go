@@ -3,6 +3,7 @@ package i2ptcpconn
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"strings"
 
@@ -127,7 +128,8 @@ func (g GarlicTCPConn) LocalMultiaddr() ma.Multiaddr {
 
 // RemoteMultiaddr returns the remote multiaddr for this connection
 func (c GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
-	return c.raddr
+	//return c.raddr
+	return c.MaBase64()
 }
 
 // LocalPrivateKey returns the local private key used for the peer.ID
@@ -203,6 +205,53 @@ func (g GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 	g.StreamListener, err = g.StreamSession.Listen()
 	if err != nil {
 		return nil, err
+	}
+	return &g, nil
+}
+
+// Listen implements a connection, but addr is IGNORED here, it's drawn from the
+//transport keys
+func (g GarlicTCPConn) forward(conn *GarlicTCPConn) {
+	//var request *http.Request
+	var err error
+	var client net.Conn
+	if client, err = net.Dial("tcp", g.Addr().String()); err != nil {
+		panic("Dial failed: %v" + err.Error())
+	}
+	go func() {
+		defer client.Close()
+		defer conn.Close()
+		io.Copy(client, conn)
+	}()
+	go func() {
+		defer client.Close()
+		defer conn.Close()
+		io.Copy(conn, client)
+	}()
+}
+
+// Listen implements a connection, but addr is IGNORED here, it's drawn from the
+//transport keys
+func (g GarlicTCPConn) Forward(addr ma.Multiaddr) (tpt.Listener, error) {
+	return g.ForwardI2P(addr)
+}
+
+// ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
+//require a multiaddr
+func (g GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) (*GarlicTCPConn, error) {
+	var err error
+	g.laddr = addr
+	g.StreamListener, err = g.StreamSession.Listen()
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		conn, err := g.AcceptI2P()
+		if err != nil {
+			panic("ERROR: failed to accept listener: %v" + err.Error())
+		}
+		go g.forward(conn)
 	}
 	return &g, nil
 }
