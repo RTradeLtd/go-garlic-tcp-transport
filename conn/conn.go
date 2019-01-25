@@ -44,6 +44,7 @@ type GarlicTCPConn struct {
 	garlicOptions []string
 }
 
+// SAMHost returns the IP address of the configured SAM bridge
 func (t *GarlicTCPConn) SAMHost() string {
 	st := strings.TrimPrefix(t.hostSAM, "/ip4/")
 	stt := strings.TrimPrefix(st, "/ip6/")
@@ -51,94 +52,104 @@ func (t *GarlicTCPConn) SAMHost() string {
 	return rt
 }
 
+// SAMPort returns the Port of the configured SAM bridge
 func (t *GarlicTCPConn) SAMPort() string {
 	st := strings.TrimPrefix(t.portSAM, "/tcp/")
 	rt := strings.TrimSuffix(st, "/")
 	return rt
 }
 
+// SAMAddress combines them and returns a full address.
 func (t GarlicTCPConn) SAMAddress() string {
 	rt := t.SAMHost() + ":" + t.SAMPort()
 	fmt.Println(rt)
 	return rt
 }
 
+// PrintOptions returns the options passed to the SAM bridge as a slice of
+// strings.
 func (t GarlicTCPConn) PrintOptions() []string {
 	return t.garlicOptions
 }
 
-func (g GarlicTCPConn) MaBase64() ma.Multiaddr {
-	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(g.i2pkeys.Addr())
+// MaBase64 gives us a multiaddr by converting an I2PAddr
+func (t GarlicTCPConn) MaBase64() ma.Multiaddr {
+	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.i2pkeys.Addr())
 	if err != nil {
 		panic("Critical address error! There is no way this should have occurred")
 	}
 	return r
 }
 
-func (g GarlicTCPConn) Base32() string {
-	return g.i2pkeys.Addr().Base32()
+// Base32 returns the remotely-accessible base32 address of the gateway over i2p
+// this is the one you want to use to visit it in the browser.
+func (t GarlicTCPConn) Base32() string {
+	return t.i2pkeys.Addr().Base32()
 }
 
-func (g GarlicTCPConn) Base64() string {
-	return g.i2pkeys.Addr().Base64()
+// Base64 returns the remotely-accessible base64 address of the gateway over I2P
+func (t GarlicTCPConn) Base64() string {
+	return t.i2pkeys.Addr().Base64()
 }
 
-// Tranpsort returns the GarlicTCPTransport to which the GarlicTCPConn belongs
-func (g GarlicTCPConn) Transport() tpt.Transport {
-	return g.parentTransport
+// Transport returns the GarlicTCPTransport to which the GarlicTCPConn belongs
+func (t GarlicTCPConn) Transport() tpt.Transport {
+	return t.parentTransport
 }
 
-// IsClosed says a connection is closed if g.StreamSession is nil because
+// IsClosed says a connection is closed if t.StreamSession is nil because
 // Close() nils it if it works. Might need to re-visit that.
-func (g GarlicTCPConn) IsClosed() bool {
-	if g.StreamSession == nil {
+func (t GarlicTCPConn) IsClosed() bool {
+	if t.StreamSession == nil {
 		return true
 	}
 	return false
 }
 
 // AcceptStream lets us streammux
-func (c GarlicTCPConn) AcceptStream() (streammux.Stream, error) {
-	return c.AcceptI2P()
+func (t GarlicTCPConn) AcceptStream() (streammux.Stream, error) {
+	return t.AcceptI2P()
 }
 
-//
-func (g GarlicTCPConn) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
-	return g.DialI2P(c, m, p)
+// Dial dials an I2P client connection to an i2p hidden service using a garlic64
+// multiaddr and returns a tpt.Conn
+func (t GarlicTCPConn) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
+	return t.DialI2P(c, m, p)
 }
 
-func (g GarlicTCPConn) DialI2P(c context.Context, m ma.Multiaddr, p peer.ID) (*GarlicTCPConn, error) {
+// DialI2P helps with Dial and returns a GarlicTCPConn
+func (t GarlicTCPConn) DialI2P(c context.Context, m ma.Multiaddr, p peer.ID) (*GarlicTCPConn, error) {
 	var err error
-	g.SAMConn, err = g.StreamSession.DialContextI2P(c, "", m.String())
+	t.SAMConn, err = t.StreamSession.DialContextI2P(c, "", m.String())
 	if err != nil {
 		return nil, err
 	}
-	return &g, nil
+	return &t, nil
 }
 
 // OpenStream lets us streammux
-func (c GarlicTCPConn) OpenStream() (streammux.Stream, error) {
-	return c.DialI2P(nil, c.RemoteMultiaddr(), c.RemotePeer())
+func (t GarlicTCPConn) OpenStream() (streammux.Stream, error) {
+	return t.DialI2P(nil, t.RemoteMultiaddr(), t.RemotePeer())
 }
 
 // LocalMultiaddr returns the local multiaddr for this connection
-func (g GarlicTCPConn) LocalMultiaddr() ma.Multiaddr {
-	return g.laddr
+func (t GarlicTCPConn) LocalMultiaddr() ma.Multiaddr {
+	return t.laddr
 }
 
 // RemoteMultiaddr returns the remote multiaddr for this connection
-func (c GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
-	return c.MaBase64()
+func (t GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
+	return t.MaBase64()
 }
 
 // LocalPrivateKey returns the local private key used for the peer.ID
-func (c GarlicTCPConn) LocalPrivateKey() crypto.PrivKey {
-	return c.lPrivKey
+func (t GarlicTCPConn) LocalPrivateKey() crypto.PrivKey {
+	return t.lPrivKey
 }
 
 // RemotePeer returns the remote peer.ID used for IPFS
-func (c GarlicTCPConn) RemotePeer() peer.ID {
-	rpeer, err := peer.IDFromPublicKey(c.RemotePublicKey())
+func (t GarlicTCPConn) RemotePeer() peer.ID {
+	rpeer, err := peer.IDFromPublicKey(t.RemotePublicKey())
 	if err != nil {
 		panic(err)
 	}
@@ -146,13 +157,13 @@ func (c GarlicTCPConn) RemotePeer() peer.ID {
 }
 
 //RemotePublicKey returns the remote public key used for the peer.ID
-func (c GarlicTCPConn) RemotePublicKey() crypto.PubKey {
-	return c.rPubKey
+func (t GarlicTCPConn) RemotePublicKey() crypto.PubKey {
+	return t.rPubKey
 }
 
 // LocalPeer returns the local peer.ID used for IPFS
-func (c GarlicTCPConn) LocalPeer() peer.ID {
-	lpeer, err := peer.IDFromPrivateKey(c.LocalPrivateKey())
+func (t GarlicTCPConn) LocalPeer() peer.ID {
+	lpeer, err := peer.IDFromPrivateKey(t.LocalPrivateKey())
 	if err != nil {
 		panic(err)
 	}
@@ -160,60 +171,59 @@ func (c GarlicTCPConn) LocalPeer() peer.ID {
 }
 
 // Close ends a SAM session associated with a transport
-func (g GarlicTCPConn) Close() error {
-	err := g.StreamSession.Close()
+func (t GarlicTCPConn) Close() error {
+	err := t.StreamSession.Close()
 	if err == nil {
-		g.StreamSession = nil
+		t.StreamSession = nil
 	}
 	return err
 }
 
 // Reset lets us streammux, I need to re-examine how to implement it.
-func (g GarlicTCPConn) Reset() error {
-	return g.Close()
+func (t GarlicTCPConn) Reset() error {
+	return t.Close()
 }
 
 // GetI2PKeys loads the i2p address keys and returns them.
-func (g GarlicTCPConn) GetI2PKeys() (*sam3.I2PKeys, error) {
-	return i2phelpers.LoadKeys(g.keysPath)
+func (t GarlicTCPConn) GetI2PKeys() (*sam3.I2PKeys, error) {
+	return i2phelpers.LoadKeys(t.keysPath)
 }
 
 // Accept implements a listener
-func (g GarlicTCPConn) Accept() (tpt.Conn, error) {
-	return g.AcceptI2P()
+func (t GarlicTCPConn) Accept() (tpt.Conn, error) {
+	return t.AcceptI2P()
 }
 
 // AcceptI2P helps with Accept
-func (g GarlicTCPConn) AcceptI2P() (*GarlicTCPConn, error) {
+func (t GarlicTCPConn) AcceptI2P() (*GarlicTCPConn, error) {
 	var err error
-	g.SAMConn, err = g.StreamListener.AcceptI2P()
+	t.SAMConn, err = t.StreamListener.AcceptI2P()
 	if err != nil {
 		return nil, err
 	}
-	return &g, nil
+	return &t, nil
 }
 
 // Listen implements a listener
-func (g GarlicTCPConn) Listen() (tpt.Conn, error) {
-	return g.ListenI2P()
+func (t GarlicTCPConn) Listen() (tpt.Conn, error) {
+	return t.ListenI2P()
 }
 
 // ListenI2P helps with Listen
-func (g GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
+func (t GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 	var err error
-	g.StreamListener, err = g.StreamSession.Listen()
+	t.StreamListener, err = t.StreamSession.Listen()
 	if err != nil {
 		return nil, err
 	}
-	return &g, nil
+	return &t, nil
 }
 
-//transport keys
-func (g GarlicTCPConn) forward(conn *GarlicTCPConn) {
+func (t GarlicTCPConn) forward(conn *GarlicTCPConn) {
 	//var request *http.Request
 	var err error
 	var client net.Conn
-	if client, err = net.Dial("tcp", g.Addr().String()); err != nil {
+	if client, err = net.Dial("tcp", t.Addr().String()); err != nil {
 		panic("Dial failed: %v" + err.Error())
 	}
 	go func() {
@@ -228,41 +238,43 @@ func (g GarlicTCPConn) forward(conn *GarlicTCPConn) {
 	}()
 }
 
-// Listen implements a connection, but addr is IGNORED here, it's drawn from the
-//transport keys
-func (g GarlicTCPConn) Forward(addr ma.Multiaddr) {
-	g.ForwardI2P(addr)
+// Forward sets a local multiaddr and forwards the service at that address to
+// I2P by calling ForwardI2P. You must already be listening on I2P before calling
+// this function.
+func (t GarlicTCPConn) Forward(addr ma.Multiaddr) {
+	t.ForwardI2P(addr)
 }
 
-// ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
-//require a multiaddr
-func (g GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) {
+// ForwardI2P sets a local multiaddr and forwards the service at that address to
+// I2P, it's what Forward calls.
+func (t GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) {
 	var err error
-	g.laddr = addr
-	g.StreamListener, err = g.StreamSession.Listen()
+	t.laddr = addr
+	t.StreamListener, err = t.StreamSession.Listen()
 	if err != nil {
 		panic(err.Error())
 	}
 	for {
-		conn, err := g.AcceptI2P()
+		conn, err := t.AcceptI2P()
 		if err != nil {
 			panic("ERROR: failed to accept listener: %v" + err.Error())
 		}
-		go g.forward(conn)
+		go t.forward(conn)
 	}
 }
 
-// Return the net.Addr version of the local Multiaddr
-func (g GarlicTCPConn) Addr() net.Addr {
-	ra, _ := manet.ToNetAddr(g.Multiaddr())
+// Addr returns the net.Addr version of the local Multiaddr
+func (t GarlicTCPConn) Addr() net.Addr {
+	ra, _ := manet.ToNetAddr(t.Multiaddr())
 	return ra
 }
 
-// return the local Multiaddr
-func (g GarlicTCPConn) Multiaddr() ma.Multiaddr {
-	return g.laddr
+// Multiaddr returns the local Multiaddr
+func (t GarlicTCPConn) Multiaddr() ma.Multiaddr {
+	return t.laddr
 }
 
+// NewGarlicTCPConn creates an I2P Connection struct from a fixed list of arguments
 func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
@@ -277,30 +289,30 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 
 // NewGarlicTCPConnFromOptions creates a GarlicTCPConn using function arguments
 func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCPConn, error) {
-	var g GarlicTCPConn
-	g.hostSAM = "127.0.0.1"
-	g.portSAM = "7656"
-	//g.passSAM = ""
-	g.keysPath = ""
-	g.onlyGarlic = false
-	g.garlicOptions = []string{}
+	var t GarlicTCPConn
+	t.hostSAM = "127.0.0.1"
+	t.portSAM = "7656"
+	//t.passSAM = ""
+	t.keysPath = ""
+	t.onlyGarlic = false
+	t.garlicOptions = []string{}
 	for _, o := range opts {
-		if err := o(&g); err != nil {
+		if err := o(&t); err != nil {
 			return nil, err
 		}
 	}
 	var err error
-	g.SAM, err = sam3.NewSAM(g.SAMAddress())
+	t.SAM, err = sam3.NewSAM(t.SAMAddress())
 	if err != nil {
 		return nil, err
 	}
-	g.i2pkeys, err = g.GetI2PKeys()
+	t.i2pkeys, err = t.GetI2PKeys()
 	if err != nil {
 		return nil, err
 	}
-	g.StreamSession, err = g.SAM.NewStreamSession(i2phelpers.RandTunName(), *g.i2pkeys, g.PrintOptions())
+	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), *t.i2pkeys, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
-	return &g, nil
+	return &t, nil
 }

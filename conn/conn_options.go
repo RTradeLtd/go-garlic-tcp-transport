@@ -8,9 +8,10 @@ import (
 	"strings"
 )
 
+// Option is a functional argument to the connection constructor
 type Option func(*GarlicTCPConn) error
 
-//SAMHost sets the host of the SAM Bridge to use
+//Transport sets the parent transport of the connection.
 func Transport(t tpt.Transport) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		c.parentTransport = t
@@ -58,7 +59,7 @@ func SAMPort(s string) func(*GarlicTCPConn) error {
 func SAMPass(s string) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		if s != "" {
-			return fmt.Errorf("SAMPass is unused for now, pass no argument(or empty string). Failing closed.")
+			return fmt.Errorf("SAMPass is unused for now, pass no argument(or empty string). Failing closed")
 		}
 		return nil
 	}
@@ -72,6 +73,8 @@ func KeysPath(s string) func(*GarlicTCPConn) error {
 	}
 }
 
+//OnlyGarlic indicates that this connection will only be used to serve anonymous
+//connections. It does nothing but indicate that for now.
 func OnlyGarlic(b bool) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		c.onlyGarlic = b
@@ -79,6 +82,7 @@ func OnlyGarlic(b bool) func(*GarlicTCPConn) error {
 	}
 }
 
+// GarlicOptions is a slice of string-formatted options to pass to the SAM API.
 func GarlicOptions(s []string) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		for _, v := range s {
