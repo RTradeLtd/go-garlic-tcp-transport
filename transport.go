@@ -97,22 +97,6 @@ func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
 	return conn.ListenI2P()
 }
 
-// Forward implements a connection, but addr is IGNORED here, it's drawn from the
-//transport keys
-func (t GarlicTCPTransport) Forward(addr ma.Multiaddr) (tpt.Listener, error) {
-	return t.ForwardI2P(addr)
-}
-
-// ForwardI2P is like Listen, but it returns the GarlicTCPConn and doesn't
-//require a multiaddr
-func (t GarlicTCPTransport) ForwardI2P(addr ma.Multiaddr) (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.SAMHost(), t.SAMPort(), t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
-	if err != nil {
-		return nil, err
-	}
-	return conn.ForwardI2P(addr)
-}
-
 // Protocols need only return this I think
 func (t GarlicTCPTransport) Protocols() []int {
 	return []int{ma.P_GARLIC64}

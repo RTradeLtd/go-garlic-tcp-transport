@@ -11,6 +11,7 @@ import (
 	peer "github.com/libp2p/go-libp2p-peer"
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
+	manet "github.com/multiformats/go-multiaddr-net"
 
 	"github.com/libp2p/go-stream-muxer"
 	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
@@ -26,7 +27,6 @@ type GarlicTCPConn struct {
 	*sam3.StreamListener
 	parentTransport tpt.Transport
 	laddr           ma.Multiaddr
-	raddr           ma.Multiaddr
 	i2pkeys         *sam3.I2PKeys
 
 	lPrivKey crypto.PrivKey
@@ -118,7 +118,7 @@ func (g GarlicTCPConn) DialI2P(c context.Context, m ma.Multiaddr, p peer.ID) (*G
 
 // OpenStream lets us streammux
 func (c GarlicTCPConn) OpenStream() (streammux.Stream, error) {
-	return c.DialI2P(nil, c.raddr, c.RemotePeer())
+	return c.DialI2P(nil, c.RemoteMultiaddr(), c.RemotePeer())
 }
 
 // LocalMultiaddr returns the local multiaddr for this connection
@@ -128,7 +128,6 @@ func (g GarlicTCPConn) LocalMultiaddr() ma.Multiaddr {
 
 // RemoteMultiaddr returns the remote multiaddr for this connection
 func (c GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
-	//return c.raddr
 	return c.MaBase64()
 }
 
@@ -209,7 +208,6 @@ func (g GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 	return &g, nil
 }
 
-// Listen implements a connection, but addr is IGNORED here, it's drawn from the
 //transport keys
 func (g GarlicTCPConn) forward(conn *GarlicTCPConn) {
 	//var request *http.Request
@@ -232,20 +230,19 @@ func (g GarlicTCPConn) forward(conn *GarlicTCPConn) {
 
 // Listen implements a connection, but addr is IGNORED here, it's drawn from the
 //transport keys
-func (g GarlicTCPConn) Forward(addr ma.Multiaddr) (tpt.Listener, error) {
-	return g.ForwardI2P(addr)
+func (g GarlicTCPConn) Forward(addr ma.Multiaddr) {
+	g.ForwardI2P(addr)
 }
 
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
-func (g GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) (*GarlicTCPConn, error) {
+func (g GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) {
 	var err error
 	g.laddr = addr
 	g.StreamListener, err = g.StreamSession.Listen()
 	if err != nil {
-		return nil, err
+		panic(err.Error())
 	}
-
 	for {
 		conn, err := g.AcceptI2P()
 		if err != nil {
@@ -253,12 +250,12 @@ func (g GarlicTCPConn) ForwardI2P(addr ma.Multiaddr) (*GarlicTCPConn, error) {
 		}
 		go g.forward(conn)
 	}
-	return &g, nil
 }
 
 // Return the net.Addr version of the local Multiaddr
 func (g GarlicTCPConn) Addr() net.Addr {
-	return g.StreamListener.Addr()
+	ra, _ := manet.ToNetAddr(g.Multiaddr())
+	return ra
 }
 
 // return the local Multiaddr
