@@ -6,6 +6,8 @@ import (
 
 	peer "github.com/libp2p/go-libp2p-peer"
 
+	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/conn"
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
 )

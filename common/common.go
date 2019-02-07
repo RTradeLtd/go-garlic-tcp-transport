@@ -2,11 +2,12 @@ package i2phelpers
 
 import (
 	"fmt"
-	"github.com/RTradeLtd/sam3"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/RTradeLtd/sam3"
 
 	"github.com/mitchellh/go-homedir"
 	ma "github.com/multiformats/go-multiaddr"

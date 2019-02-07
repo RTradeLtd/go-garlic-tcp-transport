@@ -51,11 +51,7 @@
 
 [[constraint]]
   name = "github.com/multiformats/go-multiaddr"
-  version = "1.4.0"
-
-[[constraint]]
-  name = "github.com/multiformats/go-multiaddr-net"
-  version = "1.7.1"
+  branch = "master"
 
 [prune]
   go-tests = true
