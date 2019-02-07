@@ -35,7 +35,7 @@ test:
 	go test
 
 get:
-	go get -u github.com/rtradeltd/go-garlic-tcp-transport/codec
-	go get -u github.com/rtradeltd/go-garlic-tcp-transport/conn
-	go get -u github.com/rtradeltd/go-garlic-tcp-transport/common
-	go get -u github.com/rtradeltd/go-garlic-tcp-transport
+	go get -u github.com/RTradeLtd/go-garlic-tcp-transport/codec
+	go get -u github.com/RTradeLtd/go-garlic-tcp-transport/conn
+	go get -u github.com/RTradeLtd/go-garlic-tcp-transport/common
+	go get -u github.com/RTradeLtd/go-garlic-tcp-transport

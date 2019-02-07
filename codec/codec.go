@@ -1,7 +1,7 @@
 package i2ptcpcodec
 
 import (
-	"github.com/rtradeltd/sam3"
+	"github.com/RTradeLtd/sam3"
 	"net"
 
 	ma "github.com/multiformats/go-multiaddr"

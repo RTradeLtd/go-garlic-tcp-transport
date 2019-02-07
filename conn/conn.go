@@ -13,10 +13,10 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
 
+	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
+	"github.com/RTradeLtd/sam3"
 	"github.com/libp2p/go-stream-muxer"
-	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
-	"github.com/rtradeltd/go-garlic-tcp-transport/common"
-	"github.com/rtradeltd/sam3"
 )
 
 // GarlicTCPConn implements a Conn interface
@@ -282,7 +282,7 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
-        LocalPeerID(id),
+		LocalPeerID(id),
 		SAMHost(host),
 		SAMPort(port),
 		SAMPass(pass),
