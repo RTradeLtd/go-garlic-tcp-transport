@@ -1,8 +1,15 @@
 
 #GOPATH=$(PWD)/.go
 
+VERSION=0.0.01
+
 echo:
 	@echo $(GOPATH)
+	@echo "type make version to do release $(VERSION)"
+
+version:
+	gothub release -s $(GITHUB_TOKEN) -u $(USER_GH) -r sam3 -t v$(VERSION) -d "version $(VERSION)"
+
 
 gx:
 	go get github.com/whyrusleeping/gx

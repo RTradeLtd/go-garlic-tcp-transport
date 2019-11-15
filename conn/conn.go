@@ -13,7 +13,7 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
 
-	"github.com/libp2p/go-stream-muxer"
+	"github.com/libp2p/go-libp2p-core/mux"
 	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
 	"github.com/rtradeltd/go-garlic-tcp-transport/common"
 	"github.com/rtradeltd/sam3"
@@ -104,7 +104,7 @@ func (t GarlicTCPConn) IsClosed() bool {
 }
 
 // AcceptStream lets us streammux
-func (t GarlicTCPConn) AcceptStream() (streammux.Stream, error) {
+func (t GarlicTCPConn) AcceptStream() (mux.MuxedStream, error) {
 	return t.AcceptI2P()
 }
 
@@ -125,7 +125,7 @@ func (t GarlicTCPConn) DialI2P(c context.Context, m ma.Multiaddr, p peer.ID) (*G
 }
 
 // OpenStream lets us streammux
-func (t GarlicTCPConn) OpenStream() (streammux.Stream, error) {
+func (t GarlicTCPConn) OpenStream() (mux.MuxedStream, error) {
 	return t.DialI2P(nil, t.RemoteMultiaddr(), t.RemotePeer())
 }
 
@@ -282,7 +282,7 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
-        LocalPeerID(id),
+		LocalPeerID(id),
 		SAMHost(host),
 		SAMPort(port),
 		SAMPass(pass),

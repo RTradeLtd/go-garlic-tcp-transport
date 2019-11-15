@@ -47,8 +47,8 @@ func IsValidGarlicMultiAddr(a ma.Multiaddr) bool {
 	}
 
 	// check for correct network type
-	if a.Protocols()[0].Name != "garlic64" {
-		fmt.Println("Protocol != garlic64")
+	if a.Protocols()[0].Name != "garlic32" {
+		fmt.Println("Protocol != garlic32")
 		return false
 	}
 
@@ -61,7 +61,7 @@ func IsValidGarlicMultiAddr(a ma.Multiaddr) bool {
 
 	//kinda crude, but if it's bigger than this it's at least possible that
 	//it's a valid kind of i2p address.
-	if len(addr) == 516 {
+	if len(addr) < 51 {
 		fmt.Println(addr)
 		return false
 	}
