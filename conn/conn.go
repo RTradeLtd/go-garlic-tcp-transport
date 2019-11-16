@@ -6,11 +6,12 @@ import (
 	"net"
 	"reflect"
 
+	network "github.com/libp2p/go-libp2p-core/network"
 	tpt "github.com/libp2p/go-libp2p-core/transport"
-	crypto "github.com/libp2p/go-libp2p-crypto"
+	//crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr-net"
+	//manet "github.com/multiformats/go-multiaddr-net"
 
 	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
 	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
@@ -26,16 +27,25 @@ type GarlicTCPConn struct {
 	*sam3.StreamSession
 	*sam3.StreamListener
 	*i2pkeys.I2PKeys
+	network.ConnSecurity
 
 	parentTransport tpt.Transport
-	laddr           ma.Multiaddr
-	id              peer.ID
-	rid             peer.ID
-
-	keysPath string
+	RemoteAddr      i2pkeys.I2PAddr
 
 	onlyGarlic    bool
 	garlicOptions []string
+}
+
+var test tpt.CapableConn = &GarlicTCPConn{}
+
+func (t *GarlicTCPConn) keysPath() string {
+	x := reflect.TypeOf(t.parentTransport)
+	if x.String() == "i2ptcp.GarlicTCPTransport" {
+		if _, b := x.FieldByName("keysPath"); b {
+			return reflect.ValueOf(t.parentTransport).FieldByName("keysPath").String()
+		}
+	}
+	return "127.0.0.1"
 }
 
 // SAMHost returns the IP address of the configured SAM bridge
@@ -81,8 +91,17 @@ func (t GarlicTCPConn) PrintOptions() []string {
 }
 
 // MaBase64 gives us a multiaddr by converting an I2PAddr
-func (t GarlicTCPConn) MaBase64() ma.Multiaddr {
+func (t GarlicTCPConn) MA() ma.Multiaddr {
 	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.i2pkey().Addr())
+	if err != nil {
+		panic("Critical address error! There is no way this should have occurred")
+	}
+	return r
+}
+
+// RemoteMA gives us a multiaddr for the remote peer
+func (t GarlicTCPConn) RemoteMA() ma.Multiaddr {
+	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.RemoteAddr)
 	if err != nil {
 		panic("Critical address error! There is no way this should have occurred")
 	}
@@ -142,14 +161,15 @@ func (t GarlicTCPConn) OpenStream() (mux.MuxedStream, error) {
 
 // LocalMultiaddr returns the local multiaddr for this connection
 func (t GarlicTCPConn) LocalMultiaddr() ma.Multiaddr {
-	return t.laddr
+	return t.MA()
 }
 
 // RemoteMultiaddr returns the remote multiaddr for this connection
 func (t GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
-	return t.MaBase64()
+	return t.RemoteMA()
 }
 
+/*
 // LocalPrivateKey returns the local private key used for the peer.ID
 func (t GarlicTCPConn) LocalPrivateKey() crypto.PrivKey {
 	return nil
@@ -170,7 +190,7 @@ func (t GarlicTCPConn) RemotePublicKey() crypto.PubKey {
 func (t GarlicTCPConn) LocalPeer() peer.ID {
 	return t.id
 }
-
+*/
 // Close ends a SAM session associated with a transport
 func (t GarlicTCPConn) Close() error {
 	err := t.StreamSession.Close()
@@ -188,7 +208,7 @@ func (t GarlicTCPConn) Reset() error {
 // GetI2PKeys loads the i2p address keys and returns them.
 func (t GarlicTCPConn) GetI2PKeys() (*i2pkeys.I2PKeys, error) {
 	if t.I2PKeys == nil {
-		return i2phelpers.LoadKeys(t.keysPath)
+		return i2phelpers.LoadKeys(t.keysPath())
 	}
 	return t.I2PKeys, nil
 }
@@ -225,34 +245,18 @@ func (t GarlicTCPConn) ListenI2P() (*GarlicTCPConn, error) {
 
 // Addr returns the net.Addr version of the local Multiaddr
 func (t GarlicTCPConn) Addr() net.Addr {
-	ra, _ := manet.ToNetAddr(t.Multiaddr())
-	return ra
+	return t.i2pkey().Addr()
 }
 
 // Multiaddr returns the local Multiaddr
 func (t GarlicTCPConn) Multiaddr() ma.Multiaddr {
-	return t.laddr
+	return t.LocalMultiaddr()
 }
 
 // NewGarlicTCPConn creates an I2P Connection struct from a fixed list of arguments
-func NewGarlicTCPConn(transport tpt.Transport, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
+func NewGarlicTCPConn(transport tpt.Transport, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
-		//SAMPass(pass),
-		KeysPath(keysPath),
-		OnlyGarlic(onlyGarlic),
-		GarlicOptions(options),
-	)
-}
-
-// NewGarlicTCPConnPeer creates an I2P Connection struct from a fixed list of
-// arguments with a local peer.ID
-func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
-	return NewGarlicTCPConnFromOptions(
-		Transport(transport),
-		LocalPeerID(id),
-		//SAMPass(pass),
-		KeysPath(keysPath),
 		OnlyGarlic(onlyGarlic),
 		GarlicOptions(options),
 	)
@@ -261,9 +265,9 @@ func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, pass string, keys
 // NewGarlicTCPConnFromOptions creates a GarlicTCPConn using function arguments
 func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCPConn, error) {
 	var t GarlicTCPConn
-	t.keysPath = ""
 	t.onlyGarlic = false
 	t.garlicOptions = []string{}
+	t.parentTransport = nil
 	for _, o := range opts {
 		if err := o(&t); err != nil {
 			return nil, err
@@ -281,6 +285,9 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), *t.I2PKeys, t.PrintOptions())
 	if err != nil {
 		return nil, err
+	}
+	if t.parentTransport != nil {
+		return nil, fmt.Errorf("Parent transport must be set")
 	}
 	return &t, nil
 }

@@ -27,6 +27,8 @@ type GarlicTCPTransport struct {
 	garlicOptions []string
 }
 
+var test tpt.Transport = &GarlicTCPTransport{}
+
 func (t *GarlicTCPTransport) SAMHost() string {
 	st := strings.TrimPrefix(t.HostSAM, "/ip4/")
 	stt := strings.TrimPrefix(st, "/ip6/")
@@ -71,7 +73,7 @@ func (t *GarlicTCPTransport) MatchesI2P(a ma.Multiaddr) bool {
 
 // Dial returns a new GarlicConn
 func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +89,7 @@ func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
 func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +98,7 @@ func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
 
 // Protocols need only return this I think
 func (t GarlicTCPTransport) Protocols() []int {
-	return []int{ma.P_GARLIC32}
+	return []int{ma.P_GARLIC32, ma.P_GARLIC64}
 }
 
 // Proxy always returns false, we're using the SAM bridge to make our requests

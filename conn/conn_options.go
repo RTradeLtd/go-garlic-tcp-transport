@@ -3,7 +3,7 @@ package i2ptcpconn
 import (
 	"fmt"
 
-	peer "github.com/libp2p/go-libp2p-peer"
+	//peer "github.com/libp2p/go-libp2p-core/peer"
 	tpt "github.com/libp2p/go-libp2p-transport"
 )
 
@@ -29,14 +29,6 @@ func SAMPass(s string) func(*GarlicTCPConn) error {
 	}
 }
 
-//KeysPath sets the path to the keys, if no keys are present, they will be generated.
-func KeysPath(s string) func(*GarlicTCPConn) error {
-	return func(c *GarlicTCPConn) error {
-		c.keysPath = s
-		return nil
-	}
-}
-
 //OnlyGarlic indicates that this connection will only be used to serve anonymous
 //connections. It does nothing but indicate that for now.
 func OnlyGarlic(b bool) func(*GarlicTCPConn) error {
@@ -56,9 +48,11 @@ func GarlicOptions(s []string) func(*GarlicTCPConn) error {
 	}
 }
 
+/*
 func LocalPeerID(p peer.ID) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		c.id = p
 		return nil
 	}
 }
+*/
