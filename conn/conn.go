@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strings"
+	//"strings"
     "reflect"
 
 	crypto "github.com/libp2p/go-libp2p-crypto"
@@ -18,6 +18,7 @@ import (
 	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
 	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
 	"github.com/eyedeekay/sam3"
+    "github.com/eyedeekay/sam3/i2pkeys"
 )
 
 // GarlicTCPConn implements a Conn interface
@@ -26,7 +27,7 @@ type GarlicTCPConn struct {
 	*sam3.SAM
 	*sam3.StreamSession
 	*sam3.StreamListener
-	*sam3.I2PKeys
+	*i2pkeys.I2PKeys
 
 	parentTransport tpt.Transport
 	laddr           ma.Multiaddr
@@ -41,20 +42,24 @@ type GarlicTCPConn struct {
 
 // SAMHost returns the IP address of the configured SAM bridge
 func (t *GarlicTCPConn) SAMHost() string {
-    t := reflect.TypeOf(t.parentTransport)
-    if t.String() == "i2ptcp.GarlicTCPTransport" {
-        if v, b := t.parentTransport.FieldByName("HostSAM"); b {
-            return v
+    x := reflect.TypeOf(t.parentTransport)
+    if x.String() == "i2ptcp.GarlicTCPTransport" {
+        if _, b := x.FieldByName("HostSAM"); b {
+            return reflect.ValueOf(t.parentTransport).FieldByName("HostSAM").String()
         }
     }
-	return "7657"
+	return "127.0.0.1"
 }
 
 // SAMPort returns the Port of the configured SAM bridge
 func (t *GarlicTCPConn) SAMPort() string {
-	st := strings.TrimPrefix(t.portSAM, "/tcp/")
-	rt := strings.TrimSuffix(st, "/")
-	return rt
+	x := reflect.TypeOf(t.parentTransport)
+    if x.String() == "i2ptcp.GarlicTCPTransport" {
+        if _, b := x.FieldByName("PortSAM"); b {
+            return reflect.ValueOf(t.parentTransport).FieldByName("PortSAM").String()
+        }
+    }
+	return "7657"
 }
 
 // SAMAddress combines them and returns a full address.
@@ -176,7 +181,7 @@ func (t GarlicTCPConn) Reset() error {
 }
 
 // GetI2PKeys loads the i2p address keys and returns them.
-func (t GarlicTCPConn) GetI2PKeys() (*sam3.I2PKeys, error) {
+func (t GarlicTCPConn) GetI2PKeys() (*i2pkeys.I2PKeys, error) {
     if t.I2PKeys == nil {
         return i2phelpers.LoadKeys(t.keysPath)
     }
@@ -269,11 +274,9 @@ func (t GarlicTCPConn) Multiaddr() ma.Multiaddr {
 }
 
 // NewGarlicTCPConn creates an I2P Connection struct from a fixed list of arguments
-func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
+func NewGarlicTCPConn(transport tpt.Transport, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
-		SAMHost(host),
-		SAMPort(port),
 		SAMPass(pass),
 		KeysPath(keysPath),
 		OnlyGarlic(onlyGarlic),
@@ -283,12 +286,10 @@ func NewGarlicTCPConn(transport tpt.Transport, host, port, pass string, keysPath
 
 // NewGarlicTCPConnPeer creates an I2P Connection struct from a fixed list of
 // arguments with a local peer.ID
-func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, host, port, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
+func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, pass string, keysPath string, onlyGarlic bool, options []string) (*GarlicTCPConn, error) {
 	return NewGarlicTCPConnFromOptions(
 		Transport(transport),
 		LocalPeerID(id),
-		SAMHost(host),
-		SAMPort(port),
 		SAMPass(pass),
 		KeysPath(keysPath),
 		OnlyGarlic(onlyGarlic),

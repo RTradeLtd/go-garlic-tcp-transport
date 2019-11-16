@@ -1,7 +1,8 @@
 package i2ptcpcodec
 
 import (
-	"github.com/eyedeekay/sam3"
+//	"github.com/eyedeekay/sam3"
+    "github.com/eyedeekay/sam3/i2pkeys"
 	"net"
 
 	ma "github.com/multiformats/go-multiaddr"
@@ -14,17 +15,17 @@ func FromMultiaddrToNetAddr(from ma.Multiaddr) (net.Addr, error) {
 }
 
 // FromMultiaddrToI2PNetAddr converts a ma.Multiaddr to a sam3.I2PAddr
-func FromMultiaddrToI2PNetAddr(from ma.Multiaddr) (sam3.I2PAddr, error) {
-	return sam3.NewI2PAddrFromString(from.String())
+func FromMultiaddrToI2PNetAddr(from ma.Multiaddr) (i2pkeys.I2PAddr, error) {
+	return i2pkeys.NewI2PAddrFromString(from.String())
 }
 
 // FromNetAddrToMultiaddr wraps around FromI2PNetAddrToMultiaddr to work with manet.NetCodec
 func FromNetAddrToMultiaddr(from net.Addr) (ma.Multiaddr, error) {
-	return FromI2PNetAddrToMultiaddr(from.(sam3.I2PAddr))
+	return FromI2PNetAddrToMultiaddr(from.(i2pkeys.I2PAddr))
 }
 
 // FromI2PNetAddrToMultiaddr converts a sam3.I2PAddr to a ma.Multiaddr
-func FromI2PNetAddrToMultiaddr(from sam3.I2PAddr) (ma.Multiaddr, error) {
+func FromI2PNetAddrToMultiaddr(from i2pkeys.I2PAddr) (ma.Multiaddr, error) {
 	return ma.NewMultiaddr("/garlic64/" + from.Base64())
 }
 

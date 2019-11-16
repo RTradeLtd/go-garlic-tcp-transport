@@ -2,9 +2,6 @@ package i2ptcpconn
 
 import (
 	"fmt"
-	"net"
-	"strconv"
-	"strings"
 
 	peer "github.com/libp2p/go-libp2p-peer"
 	tpt "github.com/libp2p/go-libp2p-transport"
@@ -18,41 +15,6 @@ func Transport(t tpt.Transport) func(*GarlicTCPConn) error {
 	return func(c *GarlicTCPConn) error {
 		c.parentTransport = t
 		return nil
-	}
-}
-
-//SAMHost sets the host of the SAM Bridge to use
-func SAMHost(s string) func(*GarlicTCPConn) error {
-	return func(c *GarlicTCPConn) error {
-		st := ""
-		if !strings.Contains("/ip4/", s) || !strings.Contains("/ip6/", s) {
-			ip := net.ParseIP(s)
-			if ip.To4() != nil {
-				st = "/ip4/" + s + "/"
-			}
-			if ip.To16() != nil {
-				st = "/ip6/" + s + "/"
-			}
-		}
-		c.hostSAM = st
-		return nil
-	}
-}
-
-//SAMPort sets the port of the SAM bridge to use
-func SAMPort(s string) func(*GarlicTCPConn) error {
-	return func(c *GarlicTCPConn) error {
-		st := strings.TrimPrefix(s, "/tcp/")
-		rt := strings.TrimSuffix(st, "/")
-		val, err := strconv.Atoi(rt)
-		if err != nil {
-			return fmt.Errorf("Connection Construction error: %s", err)
-		}
-		if val > 0 && val < 65536 {
-			c.portSAM = "/tcp/" + rt + "/"
-			return nil
-		}
-		return fmt.Errorf("port is %s invalid", s)
 	}
 }
 

@@ -3,6 +3,7 @@ package i2phelpers
 import (
 	"fmt"
 	"github.com/eyedeekay/sam3"
+    "github.com/eyedeekay/sam3/i2pkeys"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -89,7 +90,7 @@ func isValidExtension(ext string) bool {
 }
 
 // LoadKeys loads keys into our keys from files in the keys directory
-func LoadKeys(keysPath string) (*sam3.I2PKeys, error) {
+func LoadKeys(keysPath string) (*i2pkeys.I2PKeys, error) {
 	title := filepath.Base(keysPath)
 	extension := strings.ToLower(filepath.Ext(title))
 	realPath, err := Path(title, extension)
@@ -105,7 +106,7 @@ func LoadKeys(keysPath string) (*sam3.I2PKeys, error) {
 		if err != nil {
 			return nil, err
 		}
-		keys, err := sam3.LoadKeysIncompat(file)
+		keys, err := i2pkeys.LoadKeysIncompat(file)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +115,7 @@ func LoadKeys(keysPath string) (*sam3.I2PKeys, error) {
 	return nil, fmt.Errorf("Not permitted file extension was encountered.")
 }
 
-func CreateEepServiceKey() (*sam3.I2PKeys, error) {
+func CreateEepServiceKey() (*i2pkeys.I2PKeys, error) {
 	sam, err := sam3.NewSAM("127.0.0.1:7656")
 	if err != nil {
 		return nil, err
