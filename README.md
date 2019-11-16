@@ -2,7 +2,8 @@ go-garlic-tcp-transport
 =======================
 
 A new, more consistent and useful libp2p transport for tcp-like messages over
-i2p.
+i2p. It uses the SAM Bridge and it works again, please report bugs to me at
+this git repository.
 
 Relationship to sam3
 --------------------
