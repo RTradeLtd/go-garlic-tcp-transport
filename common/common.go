@@ -90,12 +90,12 @@ func isValidExtension(ext string) bool {
 }
 
 // LoadKeys loads keys into our keys from files in the keys directory
-func LoadKeys(keysPath string) (*i2pkeys.I2PKeys, error) {
+func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 	title := filepath.Base(keysPath)
 	extension := strings.ToLower(filepath.Ext(title))
 	realPath, err := Path(title, extension)
 	if err != nil {
-		return nil, err
+		return i2pkeys.I2PKeys{}, err
 	}
 	if _, err := os.Stat(realPath); os.IsNotExist(err) {
 		return CreateEepServiceKey()
@@ -104,28 +104,28 @@ func LoadKeys(keysPath string) (*i2pkeys.I2PKeys, error) {
 		file, err := os.Open(realPath)
 		defer file.Close()
 		if err != nil {
-			return nil, err
+			return i2pkeys.I2PKeys{}, err
 		}
 		keys, err := i2pkeys.LoadKeysIncompat(file)
 		if err != nil {
-			return nil, err
+			return i2pkeys.I2PKeys{}, err
 		}
-		return &keys, nil
+		return keys, nil
 	}
-	return nil, fmt.Errorf("Not permitted file extension was encountered.")
+	return i2pkeys.I2PKeys{}, fmt.Errorf("Not permitted file extension was encountered.")
 }
 
-func CreateEepServiceKey() (*i2pkeys.I2PKeys, error) {
+func CreateEepServiceKey() (i2pkeys.I2PKeys, error) {
 	sam, err := sam3.NewSAM("127.0.0.1:7656")
 	if err != nil {
-		return nil, err
+		return i2pkeys.I2PKeys{}, err
 	}
 	defer sam.Close()
 	k, err := sam.NewKeys()
 	if err != nil {
-		return nil, err
+		return i2pkeys.I2PKeys{}, err
 	}
-	return &k, err
+	return k, err
 }
 
 func EepServiceMultiAddr() (*ma.Multiaddr, error) {

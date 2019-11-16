@@ -24,7 +24,7 @@ type GarlicTCPConn struct {
 	*sam3.SAM
 	*sam3.StreamSession
 	*sam3.StreamListener
-	*i2pkeys.I2PKeys
+	i2pkeys.I2PKeys
 	network.ConnSecurity
 
 	parentTransport tpt.Transport
@@ -80,8 +80,8 @@ func (t *GarlicTCPConn) SAMAddress() string {
 	return rt
 }
 
-func (t *GarlicTCPConn) i2pkey() *i2pkeys.I2PKeys {
-	if t.I2PKeys == nil {
+func (t *GarlicTCPConn) i2pkey() i2pkeys.I2PKeys {
+	if t.I2PKeys.String() == "" {
 		t.I2PKeys, _ = t.GetI2PKeys()
 	}
 	return t.I2PKeys
@@ -187,8 +187,8 @@ func (t *GarlicTCPConn) Reset() error {
 }
 
 // GetI2PKeys loads the i2p address keys and returns them.
-func (t *GarlicTCPConn) GetI2PKeys() (*i2pkeys.I2PKeys, error) {
-	if t.I2PKeys == nil {
+func (t *GarlicTCPConn) GetI2PKeys() (i2pkeys.I2PKeys, error) {
+	if t.I2PKeys.String() == "" {
 		return i2phelpers.LoadKeys(t.keysPath())
 	}
 	return t.I2PKeys, nil
@@ -281,7 +281,7 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), *t.I2PKeys, t.PrintOptions())
+	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), t.I2PKeys, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
