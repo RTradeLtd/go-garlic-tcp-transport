@@ -6,18 +6,16 @@ import (
 	"net"
 	"reflect"
 
+	"github.com/libp2p/go-libp2p-core/mux"
 	network "github.com/libp2p/go-libp2p-core/network"
+	peer "github.com/libp2p/go-libp2p-core/peer"
 	tpt "github.com/libp2p/go-libp2p-core/transport"
-	//crypto "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
 	ma "github.com/multiformats/go-multiaddr"
-	//manet "github.com/multiformats/go-multiaddr-net"
 
 	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
 	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
 	"github.com/eyedeekay/sam3"
 	"github.com/eyedeekay/sam3/i2pkeys"
-	"github.com/libp2p/go-libp2p-core/mux"
 )
 
 // GarlicTCPConn implements a Conn interface
@@ -30,13 +28,12 @@ type GarlicTCPConn struct {
 	network.ConnSecurity
 
 	parentTransport tpt.Transport
-	RemoteAddr      i2pkeys.I2PAddr
 
 	onlyGarlic    bool
 	garlicOptions []string
 }
 
-var test tpt.CapableConn = &GarlicTCPConn{}
+var gc tpt.CapableConn = &GarlicTCPConn{}
 
 func (t *GarlicTCPConn) keysPath() string {
 	x := reflect.TypeOf(t.parentTransport)
@@ -101,7 +98,7 @@ func (t GarlicTCPConn) MA() ma.Multiaddr {
 
 // RemoteMA gives us a multiaddr for the remote peer
 func (t GarlicTCPConn) RemoteMA() ma.Multiaddr {
-	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.RemoteAddr)
+	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.SAMConn.RemoteAddr().(i2pkeys.I2PAddr))
 	if err != nil {
 		panic("Critical address error! There is no way this should have occurred")
 	}
@@ -169,28 +166,6 @@ func (t GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
 	return t.RemoteMA()
 }
 
-/*
-// LocalPrivateKey returns the local private key used for the peer.ID
-func (t GarlicTCPConn) LocalPrivateKey() crypto.PrivKey {
-	return nil
-}
-
-// RemotePeer returns the remote peer.ID used for IPFS
-func (t GarlicTCPConn) RemotePeer() peer.ID {
-	return t.rid
-}
-
-// RemotePublicKey returns the remote public key used for communicating with the
-// peer. It returns nil for now, security is provided solely by i2p for now.
-func (t GarlicTCPConn) RemotePublicKey() crypto.PubKey {
-	return nil
-}
-
-// LocalPeer returns the local peer.ID used for IPFS
-func (t GarlicTCPConn) LocalPeer() peer.ID {
-	return t.id
-}
-*/
 // Close ends a SAM session associated with a transport
 func (t GarlicTCPConn) Close() error {
 	err := t.StreamSession.Close()
@@ -251,6 +226,21 @@ func (t GarlicTCPConn) Addr() net.Addr {
 // Multiaddr returns the local Multiaddr
 func (t GarlicTCPConn) Multiaddr() ma.Multiaddr {
 	return t.LocalMultiaddr()
+}
+
+// Stat returns the local Multiaddr
+func (t GarlicTCPConn) Stat() network.Stat {
+	var dir network.Direction
+	if t.StreamListener == nil {
+		dir = network.DirOutbound
+	} else if t.SAMConn != nil {
+		dir = network.DirInbound
+	} else {
+		dir = network.DirUnknown
+	}
+	return network.Stat{
+		Direction: dir,
+	}
 }
 
 // NewGarlicTCPConn creates an I2P Connection struct from a fixed list of arguments
