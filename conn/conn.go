@@ -36,10 +36,12 @@ type GarlicTCPConn struct {
 var gc tpt.CapableConn = &GarlicTCPConn{}
 
 func (t *GarlicTCPConn) keysPath() string {
-	x := reflect.TypeOf(t.parentTransport)
-	if x.String() == "i2ptcp.GarlicTCPTransport" {
-		if _, b := x.FieldByName("keysPath"); b {
-			return reflect.ValueOf(t.parentTransport).FieldByName("keysPath").String()
+	if t.parentTransport != nil {
+		x := reflect.TypeOf(t.parentTransport)
+		if x.String() == "i2ptcp.GarlicTCPTransport" {
+			if _, b := x.FieldByName("keysPath"); b {
+				return reflect.ValueOf(t.parentTransport).FieldByName("keysPath").String()
+			}
 		}
 	}
 	return "127.0.0.1"
@@ -47,10 +49,12 @@ func (t *GarlicTCPConn) keysPath() string {
 
 // SAMHost returns the IP address of the configured SAM bridge
 func (t *GarlicTCPConn) SAMHost() string {
-	x := reflect.TypeOf(t.parentTransport)
-	if x.String() == "i2ptcp.GarlicTCPTransport" {
-		if _, b := x.FieldByName("HostSAM"); b {
-			return reflect.ValueOf(t.parentTransport).FieldByName("HostSAM").String()
+	if t.parentTransport != nil {
+		x := reflect.TypeOf(t.parentTransport)
+		if x.String() == "i2ptcp.GarlicTCPTransport" {
+			if _, b := x.FieldByName("HostSAM"); b {
+				return reflect.ValueOf(t.parentTransport).FieldByName("HostSAM").String()
+			}
 		}
 	}
 	return "127.0.0.1"
@@ -58,10 +62,12 @@ func (t *GarlicTCPConn) SAMHost() string {
 
 // SAMPort returns the Port of the configured SAM bridge
 func (t *GarlicTCPConn) SAMPort() string {
-	x := reflect.TypeOf(t.parentTransport)
-	if x.String() == "i2ptcp.GarlicTCPTransport" {
-		if _, b := x.FieldByName("PortSAM"); b {
-			return reflect.ValueOf(t.parentTransport).FieldByName("PortSAM").String()
+	if t.parentTransport != nil {
+		x := reflect.TypeOf(t.parentTransport)
+		if x.String() == "i2ptcp.GarlicTCPTransport" {
+			if _, b := x.FieldByName("PortSAM"); b {
+				return reflect.ValueOf(t.parentTransport).FieldByName("PortSAM").String()
+			}
 		}
 	}
 	return "7657"
