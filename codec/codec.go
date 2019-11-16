@@ -31,7 +31,11 @@ func FromNetAddrToMultiaddr(from net.Addr) (ma.Multiaddr, error) {
 	return FromI2PNetAddrToMultiaddr(from.(i2pkeys.I2PAddr))
 }
 
+func trim(b32 string) string {
+	return strings.Replace(b32, ".b32.i2p", "", -1)
+}
+
 // FromI2PNetAddrToMultiaddr converts a sam3.I2PAddr to a ma.Multiaddr
 func FromI2PNetAddrToMultiaddr(from i2pkeys.I2PAddr) (ma.Multiaddr, error) {
-	return ma.NewMultiaddr("/garlic64/" + from.Base64() + "/garlic32/" + from.Base32())
+	return ma.NewMultiaddr("/garlic64/" + from.Base64() + "/garlic32/" + trim(from.Base32()))
 }
