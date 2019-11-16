@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"strings"
+    "reflect"
 
 	crypto "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
@@ -17,7 +18,6 @@ import (
 	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
 	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
 	"github.com/eyedeekay/sam3"
-    "github.com/RTradeLtd/go-garlic-tcp-transport"
 )
 
 // GarlicTCPConn implements a Conn interface
@@ -41,12 +41,13 @@ type GarlicTCPConn struct {
 
 // SAMHost returns the IP address of the configured SAM bridge
 func (t *GarlicTCPConn) SAMHost() string {
-    switch t.parentTransport.(type) {
-        case i2ptcp.GarlicTCPTransport:
-        default:
-            return "127.0.0.1:7657"
+    t := reflect.TypeOf(t.parentTransport)
+    if t.String() == "i2ptcp.GarlicTCPTransport" {
+        if v, b := t.parentTransport.FieldByName("HostSAM"); b {
+            return v
+        }
     }
-	return rt
+	return "7657"
 }
 
 // SAMPort returns the Port of the configured SAM bridge
