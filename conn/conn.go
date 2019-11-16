@@ -174,7 +174,8 @@ func (t *GarlicTCPConn) RemoteMultiaddr() ma.Multiaddr {
 
 // Close ends a SAM session associated with a transport
 func (t *GarlicTCPConn) Close() error {
-	return t.SAMConn.Close()
+	//return t.SAMConn.Close()
+	return nil
 }
 
 // Reset lets us streammux, I need to re-examine how to implement it.
