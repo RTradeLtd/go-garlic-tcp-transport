@@ -70,7 +70,7 @@ func (t *GarlicTCPConn) SAMPort() string {
 			}
 		}
 	}
-	return "7657"
+	return "7656"
 }
 
 // SAMAddress combines them and returns a full address.
