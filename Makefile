@@ -1,7 +1,7 @@
 
 #GOPATH=$(PWD)/.go
 
-VERSION=0.0.091
+VERSION=0.0.093
 USER_GH=RTradeLtd
 
 echo:
