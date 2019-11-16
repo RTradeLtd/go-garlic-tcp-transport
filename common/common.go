@@ -3,7 +3,7 @@ package i2phelpers
 import (
 	"fmt"
 	"github.com/eyedeekay/sam3"
-    "github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/sam3/i2pkeys"
 	"math/rand"
 	"os"
 	"path/filepath"

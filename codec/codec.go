@@ -1,21 +1,28 @@
 package i2ptcpcodec
 
 import (
-//	"github.com/eyedeekay/sam3"
-    "github.com/eyedeekay/sam3/i2pkeys"
+	//	"github.com/eyedeekay/sam3"
+	"github.com/eyedeekay/geti2p64"
+	"github.com/eyedeekay/sam3/i2pkeys"
 	"net"
+	"strings"
 
 	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr-net"
 )
 
-// FromMultiaddrToNetAddr wraps around FromMultiaddrToI2PNetAddr to work with manet.NetCodec
+// FromMultiaddrToNetAddr wraps around FromMultiaddrToI2PNetAddr to work with manet.NetCodec, requires a full base64 to work
 func FromMultiaddrToNetAddr(from ma.Multiaddr) (net.Addr, error) {
 	return FromMultiaddrToI2PNetAddr(from)
 }
 
-// FromMultiaddrToI2PNetAddr converts a ma.Multiaddr to a sam3.I2PAddr
+// FromMultiaddrToI2PNetAddr converts a ma.Multiaddr to a sam3.I2PAddr, requires a full base64 to work
 func FromMultiaddrToI2PNetAddr(from ma.Multiaddr) (i2pkeys.I2PAddr, error) {
+	if strings.HasSuffix(from.String(), ".i2p") {
+		final, err := lookup.Lookup(from.String())
+		if err == nil {
+			return i2pkeys.NewI2PAddrFromString(final)
+		}
+	}
 	return i2pkeys.NewI2PAddrFromString(from.String())
 }
 
@@ -26,24 +33,5 @@ func FromNetAddrToMultiaddr(from net.Addr) (ma.Multiaddr, error) {
 
 // FromI2PNetAddrToMultiaddr converts a sam3.I2PAddr to a ma.Multiaddr
 func FromI2PNetAddrToMultiaddr(from i2pkeys.I2PAddr) (ma.Multiaddr, error) {
-	return ma.NewMultiaddr("/garlic64/" + from.Base64())
-}
-
-func NewGarlicTCPNetCodec() manet.NetCodec {
-
-	var fromNetAddr manet.FromNetAddrFunc
-	fromNetAddr = FromNetAddrToMultiaddr
-
-	var toMultiAddr manet.ToNetAddrFunc
-	toMultiAddr = FromMultiaddrToNetAddr
-
-	return manet.NetCodec{
-		//NetAddrNetworks: ,
-		ProtocolName: "garlic64",
-		// ParseNetAddr parses a net.Addr belonging to this type into a multiaddr
-		ParseNetAddr: fromNetAddr,
-		// ConvertMultiaddr converts a multiaddr of this type back into a net.Addr
-		ConvertMultiaddr: toMultiAddr,
-		Protocol:         ma.ProtocolWithName("garlic64"),
-	}
+	return ma.NewMultiaddr("/garlic64/" + from.Base64() + "/garlic32/" + from.Base32())
 }

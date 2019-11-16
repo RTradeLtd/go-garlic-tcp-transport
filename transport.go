@@ -17,10 +17,10 @@ import (
 // via the SAM bridge
 type GarlicTCPTransport struct {
 	i2ptcpconn.GarlicTCPConn
-	id      peer.ID
-	HostSAM string
-	PortSAM string
-	PassSAM string
+	id       peer.ID
+	HostSAM  string
+	PortSAM  string
+	PassSAM  string
 	keysPath string
 
 	onlyGarlic    bool
@@ -71,7 +71,7 @@ func (t *GarlicTCPTransport) MatchesI2P(a ma.Multiaddr) bool {
 
 // Dial returns a new GarlicConn
 func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.HostSAM, t.PortSAM, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
 func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.SAMHost(), t.SAMPort(), t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
