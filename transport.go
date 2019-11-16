@@ -42,22 +42,22 @@ func (t *GarlicTCPTransport) SAMPort() string {
 	return rt
 }
 
-func (t GarlicTCPTransport) SAMAddress() string {
+func (t *GarlicTCPTransport) SAMAddress() string {
 	return t.SAMHost() + ":" + t.SAMPort()
 }
 
-func (t GarlicTCPTransport) PrintOptions() []string {
+func (t *GarlicTCPTransport) PrintOptions() []string {
 	return t.garlicOptions
 }
 
 // CanDial implements transport.CanDial
-func (t GarlicTCPTransport) CanDial(m ma.Multiaddr) bool {
+func (t *GarlicTCPTransport) CanDial(m ma.Multiaddr) bool {
 	return t.Matches(m)
 }
 
 // CanDialI2P is a special CanDial function that only returns true if it's an
 // i2p address.
-func (t GarlicTCPTransport) CanDialI2P(m ma.Multiaddr) bool {
+func (t *GarlicTCPTransport) CanDialI2P(m ma.Multiaddr) bool {
 	return t.MatchesI2P(m)
 }
 
@@ -72,7 +72,7 @@ func (t *GarlicTCPTransport) MatchesI2P(a ma.Multiaddr) bool {
 }
 
 // Dial returns a new GarlicConn
-func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
+func (t *GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
 	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
@@ -82,13 +82,13 @@ func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (
 
 // Listen implements a connection, but addr is IGNORED here, it's drawn from the
 //transport keys
-func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
+func (t *GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 	return t.ListenI2P()
 }
 
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
-func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
+func (t *GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
 	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
@@ -97,12 +97,12 @@ func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
 }
 
 // Protocols need only return this I think
-func (t GarlicTCPTransport) Protocols() []int {
+func (t *GarlicTCPTransport) Protocols() []int {
 	return []int{ma.P_GARLIC32, ma.P_GARLIC64}
 }
 
 // Proxy always returns false, we're using the SAM bridge to make our requests
-func (t GarlicTCPTransport) Proxy() bool {
+func (t *GarlicTCPTransport) Proxy() bool {
 	return false
 }
 
