@@ -25,9 +25,10 @@ type GarlicTCPConn struct {
 	*sam3.SAM
 	*sam3.StreamSession
 	*sam3.StreamListener
+	*sam3.I2PKeys
+
 	parentTransport tpt.Transport
 	laddr           ma.Multiaddr
-	i2pkeys         *sam3.I2PKeys
 	id              peer.ID
 	rid             peer.ID
 
@@ -71,7 +72,7 @@ func (t GarlicTCPConn) PrintOptions() []string {
 
 // MaBase64 gives us a multiaddr by converting an I2PAddr
 func (t GarlicTCPConn) MaBase64() ma.Multiaddr {
-	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.i2pkeys.Addr())
+	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.I2PKeys.Addr())
 	if err != nil {
 		panic("Critical address error! There is no way this should have occurred")
 	}
@@ -81,12 +82,12 @@ func (t GarlicTCPConn) MaBase64() ma.Multiaddr {
 // Base32 returns the remotely-accessible base32 address of the gateway over i2p
 // this is the one you want to use to visit it in the browser.
 func (t GarlicTCPConn) Base32() string {
-	return t.i2pkeys.Addr().Base32()
+	return t.I2PKeys.Addr().Base32()
 }
 
 // Base64 returns the remotely-accessible base64 address of the gateway over I2P
 func (t GarlicTCPConn) Base64() string {
-	return t.i2pkeys.Addr().Base64()
+	return t.I2PKeys.Addr().Base64()
 }
 
 // Transport returns the GarlicTCPTransport to which the GarlicTCPConn belongs
@@ -311,11 +312,11 @@ func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCP
 	if err != nil {
 		return nil, err
 	}
-	t.i2pkeys, err = t.GetI2PKeys()
+	t.I2PKeys, err = t.GetI2PKeys()
 	if err != nil {
 		return nil, err
 	}
-	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), *t.i2pkeys, t.PrintOptions())
+	t.StreamSession, err = t.SAM.NewStreamSession(i2phelpers.RandTunName(), *t.I2PKeys, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}

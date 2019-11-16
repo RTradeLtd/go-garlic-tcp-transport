@@ -1,14 +1,16 @@
 
 #GOPATH=$(PWD)/.go
 
-VERSION=0.0.01
+VERSION=0.0.02
+USER_GH=RTradeLtd
 
 echo:
 	@echo $(GOPATH)
 	@echo "type make version to do release $(VERSION)"
 
+
 version:
-	gothub release -s $(GITHUB_TOKEN) -u $(USER_GH) -r sam3 -t v$(VERSION) -d "version $(VERSION)"
+	gothub release -s $(GITHUB_TOKEN) -u $(USER_GH) -r go-garlic-tcp-transport -t v$(VERSION) -d "version $(VERSION)"
 
 
 gx:
