@@ -9,18 +9,18 @@ import (
 	tpt "github.com/libp2p/go-libp2p-transport"
 	ma "github.com/multiformats/go-multiaddr"
 
-	"github.com/rtradeltd/go-garlic-tcp-transport/common"
-	"github.com/rtradeltd/go-garlic-tcp-transport/conn"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/conn"
 )
 
 // GarlicTCPTransport is a libp2p interface to an i2p TCP-like tunnel created
 // via the SAM bridge
 type GarlicTCPTransport struct {
-	hostSAM string
-	portSAM string
-	passSAM string
+	i2ptcpconn.GarlicTCPConn
 	id      peer.ID
-
+	HostSAM string
+	PortSAM string
+	PassSAM string
 	keysPath string
 
 	onlyGarlic    bool
@@ -28,14 +28,14 @@ type GarlicTCPTransport struct {
 }
 
 func (t *GarlicTCPTransport) SAMHost() string {
-	st := strings.TrimPrefix(t.hostSAM, "/ip4/")
+	st := strings.TrimPrefix(t.HostSAM, "/ip4/")
 	stt := strings.TrimPrefix(st, "/ip6/")
 	rt := strings.TrimSuffix(stt, "/")
 	return rt
 }
 
 func (t *GarlicTCPTransport) SAMPort() string {
-	st := strings.TrimPrefix(t.portSAM, "/tcp/")
+	st := strings.TrimPrefix(t.PortSAM, "/tcp/")
 	rt := strings.TrimSuffix(st, "/")
 	return rt
 }
@@ -71,7 +71,7 @@ func (t *GarlicTCPTransport) MatchesI2P(a ma.Multiaddr) bool {
 
 // Dial returns a new GarlicConn
 func (t GarlicTCPTransport) Dial(c context.Context, m ma.Multiaddr, p peer.ID) (tpt.Conn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.hostSAM, t.portSAM, t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConn(t, t.HostSAM, t.PortSAM, t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (t GarlicTCPTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 // ListenI2P is like Listen, but it returns the GarlicTCPConn and doesn't
 //require a multiaddr
 func (t GarlicTCPTransport) ListenI2P() (*i2ptcpconn.GarlicTCPConn, error) {
-	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.SAMHost(), t.SAMPort(), t.passSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
+	conn, err := i2ptcpconn.NewGarlicTCPConnPeer(t, t.id, t.SAMHost(), t.SAMPort(), t.PassSAM, t.keysPath, t.onlyGarlic, t.PrintOptions())
 	if err != nil {
 		return nil, err
 	}
@@ -131,9 +131,9 @@ func NewGarlicTCPTransportPeer(id peer.ID, host, port, pass string, keysPath str
 
 func NewGarlicTCPTransportFromOptions(opts ...func(*GarlicTCPTransport) error) (*GarlicTCPTransport, error) {
 	var g GarlicTCPTransport
-	g.hostSAM = "127.0.0.1"
-	g.portSAM = "7656"
-	g.passSAM = ""
+	g.HostSAM = "127.0.0.1"
+	g.PortSAM = "7656"
+	g.PassSAM = ""
 	g.keysPath = ""
 	g.onlyGarlic = false
 	g.garlicOptions = []string{}

@@ -14,9 +14,10 @@ import (
 	manet "github.com/multiformats/go-multiaddr-net"
 
 	"github.com/libp2p/go-libp2p-core/mux"
-	"github.com/rtradeltd/go-garlic-tcp-transport/codec"
-	"github.com/rtradeltd/go-garlic-tcp-transport/common"
-	"github.com/rtradeltd/sam3"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/codec"
+	"github.com/RTradeLtd/go-garlic-tcp-transport/common"
+	"github.com/eyedeekay/sam3"
+    "github.com/RTradeLtd/go-garlic-tcp-transport"
 )
 
 // GarlicTCPConn implements a Conn interface
@@ -32,10 +33,6 @@ type GarlicTCPConn struct {
 	id              peer.ID
 	rid             peer.ID
 
-	hostSAM string
-	portSAM string
-	//passSAM string
-
 	keysPath string
 
 	onlyGarlic    bool
@@ -44,9 +41,11 @@ type GarlicTCPConn struct {
 
 // SAMHost returns the IP address of the configured SAM bridge
 func (t *GarlicTCPConn) SAMHost() string {
-	st := strings.TrimPrefix(t.hostSAM, "/ip4/")
-	stt := strings.TrimPrefix(st, "/ip6/")
-	rt := strings.TrimSuffix(stt, "/")
+    switch t.parentTransport.(type) {
+        case i2ptcp.GarlicTCPTransport:
+        default:
+            return "127.0.0.1:7657"
+    }
 	return rt
 }
 
@@ -177,7 +176,10 @@ func (t GarlicTCPConn) Reset() error {
 
 // GetI2PKeys loads the i2p address keys and returns them.
 func (t GarlicTCPConn) GetI2PKeys() (*sam3.I2PKeys, error) {
-	return i2phelpers.LoadKeys(t.keysPath)
+    if t.I2PKeys == nil {
+        return i2phelpers.LoadKeys(t.keysPath)
+    }
+    return t.I2PKeys, nil
 }
 
 // Accept implements a listener
@@ -296,8 +298,8 @@ func NewGarlicTCPConnPeer(transport tpt.Transport, id peer.ID, host, port, pass 
 // NewGarlicTCPConnFromOptions creates a GarlicTCPConn using function arguments
 func NewGarlicTCPConnFromOptions(opts ...func(*GarlicTCPConn) error) (*GarlicTCPConn, error) {
 	var t GarlicTCPConn
-	t.hostSAM = "127.0.0.1"
-	t.portSAM = "7656"
+	//t.hostSAM = "127.0.0.1"
+	//t.portSAM = "7656"
 	//t.passSAM = ""
 	t.keysPath = ""
 	t.onlyGarlic = false

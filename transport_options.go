@@ -24,7 +24,7 @@ func SAMHost(s string) func(*GarlicTCPTransport) error {
 				st = "/ip6/" + s + "/"
 			}
 		}
-		c.hostSAM = st
+		c.HostSAM = st
 		return nil
 	}
 }
@@ -39,7 +39,7 @@ func SAMPort(s string) func(*GarlicTCPTransport) error {
 			return fmt.Errorf("Transport Construction error: %s", err)
 		}
 		if val > 0 && val < 65536 {
-			c.portSAM = "/tcp/" + rt + "/"
+			c.PortSAM = "/tcp/" + rt + "/"
 			return nil
 		}
 		return fmt.Errorf("port is %s invalid", s)

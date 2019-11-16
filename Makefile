@@ -12,6 +12,9 @@ echo:
 version:
 	gothub release -s $(GITHUB_TOKEN) -u $(USER_GH) -r go-garlic-tcp-transport -t v$(VERSION) -d "version $(VERSION)"
 
+del:
+	gothub delete -s $(GITHUB_TOKEN) -u $(USER_GH) -r go-garlic-tcp-transport -t v$(VERSION)
+	gothub delete -s $(GITHUB_TOKEN) -u $(USER_GH) -r go-garlic-tcp-transport -t v0.0.1
 
 gx:
 	go get github.com/whyrusleeping/gx
@@ -48,3 +51,7 @@ get:
 	go get -u github.com/rtradeltd/go-garlic-tcp-transport/conn
 	go get -u github.com/rtradeltd/go-garlic-tcp-transport/common
 	go get -u github.com/rtradeltd/go-garlic-tcp-transport
+
+case:
+	find . -path ./vendor -prune -o -name "*.go" -exec sed -i 's|rtradeltd|RTradeLtd|g' {} \;
+	find . -path ./vendor -prune -o -name "*.go" -exec sed -i 's|RTradeLtd/sam3|eyedeekay/sam3|g' {} \;
