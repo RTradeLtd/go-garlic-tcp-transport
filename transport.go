@@ -144,5 +144,8 @@ func NewGarlicTCPTransportFromOptions(opts ...func(*GarlicTCPTransport) error) (
 			return nil, err
 		}
 	}
+    if g.keysPath == "" {
+        g.keysPath = "dht-" + i2phelpers.RandTunName()
+    }
 	return &g, nil
 }
