@@ -97,7 +97,7 @@ func (t *GarlicTCPConn) PrintOptions() []string {
 func (t *GarlicTCPConn) MA() ma.Multiaddr {
 	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.i2pkey().Addr())
 	if err != nil {
-		panic("Critical address error! There is no way this should have occurred")
+		panic("Critical address error! There is no way this should have occurred", err)
 	}
 	return r
 }
@@ -106,7 +106,7 @@ func (t *GarlicTCPConn) MA() ma.Multiaddr {
 func (t *GarlicTCPConn) RemoteMA() ma.Multiaddr {
 	r, err := i2ptcpcodec.FromI2PNetAddrToMultiaddr(t.SAMConn.RemoteAddr().(i2pkeys.I2PAddr))
 	if err != nil {
-		panic("Critical address error! There is no way this should have occurred")
+		panic("Critical address error! There is no way this should have occurred", err)
 	}
 	return r
 }
