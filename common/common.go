@@ -94,6 +94,7 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 	title := filepath.Base(keysPath)
 	extension := strings.ToLower(filepath.Ext(title))
 	realPath, err := Path(title, extension)
+    log.Println("Path to save file", realPath)
 	if err != nil {
 		return i2pkeys.I2PKeys{}, err
 	}
