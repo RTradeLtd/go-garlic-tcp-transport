@@ -98,7 +98,20 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 		return i2pkeys.I2PKeys{}, err
 	}
 	if _, err := os.Stat(realPath); os.IsNotExist(err) {
-		return CreateEepServiceKey()
+		keys, err := CreateEepServiceKey()
+		if err != nil {
+			return i2pkeys.I2PKeys{}, err
+		}
+		file, err := os.Open(realPath)
+		defer file.Close()
+		if err != nil {
+			return i2pkeys.I2PKeys{}, err
+		}
+		err = i2pkeys.StoreKeysIncompat(keys, file)
+		if err != nil {
+			return i2pkeys.I2PKeys{}, err
+		}
+		return keys, nil
 	}
 	if isValidExtension(extension) {
 		file, err := os.Open(realPath)
