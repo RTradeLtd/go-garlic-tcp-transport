@@ -94,7 +94,6 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 	title := filepath.Base(keysPath)
 	extension := strings.ToLower(filepath.Ext(title))
 	realPath, err := Path(title, extension)
-    log.Println("Path to save file", realPath)
 	if err != nil {
 		return i2pkeys.I2PKeys{}, err
 	}
@@ -108,12 +107,10 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
 		}
-        log.Println("Storing keys in", file.AbsolutePath())
 		err = i2pkeys.StoreKeysIncompat(keys, file)
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
 		}
-        log.Println("Stored keys in", file.AbsolutePath())
 		return keys, nil
 	}
 	if isValidExtension(extension) {
@@ -122,12 +119,10 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
 		}
-        log.Println("Stored keys in", file.AbsolutePath())
 		keys, err := i2pkeys.LoadKeysIncompat(file)
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
 		}
-        log.Println("Stored keys in", file.AbsolutePath())
 		return keys, nil
 	}
 	return i2pkeys.I2PKeys{}, fmt.Errorf("Not permitted file extension was encountered.")
