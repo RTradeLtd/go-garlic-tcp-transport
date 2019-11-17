@@ -102,7 +102,7 @@ func LoadKeys(keysPath string) (i2pkeys.I2PKeys, error) {
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
 		}
-		file, err := os.Open(realPath)
+		file, err := os.Create(realPath)
 		defer file.Close()
 		if err != nil {
 			return i2pkeys.I2PKeys{}, err
